@@ -63,7 +63,7 @@ export default function RadarIndex({
             <Head title="Tech radar" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Tech radar"
                         description={`${pendingCount} item${pendingCount === 1 ? '' : 's'} waiting on triage`}
@@ -103,13 +103,13 @@ export default function RadarIndex({
                             event.preventDefault();
                             applyFilters({ q: search });
                         }}
-                        className="flex items-end gap-2"
+                        className="flex w-full gap-2 sm:w-auto"
                     >
                         <Input
                             type="search"
                             aria-label="Search radar items"
                             placeholder="Search title and summary"
-                            className="w-64"
+                            className="min-w-0 flex-1 sm:w-64 sm:flex-none"
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                         />
@@ -121,7 +121,7 @@ export default function RadarIndex({
                     {feeds.length > 0 && (
                         <NativeSelect
                             aria-label="Filter by feed"
-                            className="w-56"
+                            className="w-full sm:w-56"
                             options={[
                                 { value: '', label: 'All feeds' },
                                 ...feeds,
@@ -170,11 +170,11 @@ export default function RadarIndex({
                                 key={item.id}
                                 className="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 md:flex-row md:items-start md:justify-between"
                             >
-                                <div className="space-y-1">
+                                <div className="min-w-0 space-y-1">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <Link
                                             href={show(item.id)}
-                                            className="font-medium hover:underline"
+                                            className="font-medium break-words hover:underline"
                                         >
                                             {item.title}
                                         </Link>
@@ -216,7 +216,7 @@ export default function RadarIndex({
                                     )}
                                 </div>
 
-                                <div className="flex flex-col items-start gap-2">
+                                <div className="flex w-full flex-col items-start gap-2 md:w-auto">
                                     <TriageForm
                                         item={item}
                                         statuses={statuses}

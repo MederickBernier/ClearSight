@@ -107,12 +107,12 @@ export default function SavedSearches({
                             onSuccess: () => reset('name'),
                         });
                     }}
-                    className="flex items-end gap-2"
+                    className="flex flex-wrap items-end gap-2"
                 >
                     <Input
                         aria-label="Name for this search"
                         placeholder="Name this search"
-                        className="w-56"
+                        className="min-w-0 flex-1 sm:w-56 sm:flex-none"
                         value={data.name}
                         onChange={(event) =>
                             setData('name', event.target.value)
@@ -128,7 +128,7 @@ export default function SavedSearches({
                         <Bookmark /> Save search
                     </Button>
                     {errors.name && (
-                        <p className="text-sm text-destructive-foreground">
+                        <p className="w-full text-sm text-destructive-foreground">
                             {errors.name}
                         </p>
                     )}

@@ -62,7 +62,7 @@ export default function ShowRadarItem({
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex w-fit items-center gap-2 text-sm underline"
+                    className="inline-flex w-fit max-w-full items-center gap-2 text-sm break-all underline"
                 >
                     <ExternalLink className="size-4" /> {item.url}
                 </a>
