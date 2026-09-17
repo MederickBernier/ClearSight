@@ -34,9 +34,13 @@ COPY . .
 # env file present. Real configuration is injected at runtime, never baked in.
 # storage/framework is excluded from the build context (it is runtime state),
 # but Laravel still wants the cache paths to exist in order to boot.
+# Booting also needs an encryption key (sessions are encrypted), so the
+# throwaway env gets a throwaway key; both are deleted in this same layer and
+# never reach the image.
 RUN mkdir -p storage/framework/views storage/framework/cache/data \
         storage/framework/sessions storage/logs bootstrap/cache \
     && cp .env.example .env \
+    && php artisan key:generate --force --no-interaction \
     && npm ci \
     && npm run build \
     && rm .env
