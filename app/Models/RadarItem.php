@@ -10,6 +10,7 @@ use Database\Factories\RadarItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -45,6 +46,7 @@ class RadarItem extends Model implements Linkable
     use HasFactory;
 
     use HasItemLinks;
+    use MassPrunable;
 
     /**
      * @return array<string,string>
@@ -95,6 +97,24 @@ class RadarItem extends Model implements Linkable
 
             $item->is_hidden = $item->triage_status === TriageStatus::Discarded;
         });
+    }
+
+    /**
+     * Discarded items the feeds have long since moved on from.
+     *
+     * A discarded row is kept at first because its url is what stops the next
+     * fetch from resurfacing it; a year on, no feed still lists it. Anything
+     * linked to other work is history and stays.
+     *
+     * @return Builder<RadarItem>
+     */
+    public function prunable(): Builder
+    {
+        return self::query()
+            ->where('triage_status', TriageStatus::Discarded)
+            ->where('fetched_at', '<', now()->subYear())
+            ->whereDoesntHave('outgoingItemLinks')
+            ->whereDoesntHave('incomingItemLinks');
     }
 
     /**

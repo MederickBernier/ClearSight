@@ -20,7 +20,8 @@ export type ItemLink = {
 /** The cross-module link props every module's show page receives. */
 export type ItemLinkProps = {
     itemLinks: { outgoing: ItemLink[]; incoming: ItemLink[] };
-    itemLinkTargets: ItemLinkTarget[];
+    /** Only sent when asked for: the page reloads it when the add form opens. */
+    itemLinkTargets?: ItemLinkTarget[];
     itemLinkTypes: { value: string; label: string }[];
     itemLinkSource: { type: string; id: number };
 };

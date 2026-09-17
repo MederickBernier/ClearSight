@@ -5,8 +5,10 @@ namespace App\Concerns;
 use App\Contracts\Linkable;
 use App\Enums\ItemLinkType;
 use App\Models\ItemLink;
+use App\Models\RadarItem;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Inertia\Inertia;
 
 /**
  * Builds the cross-module link payload a module's show page renders.
@@ -25,7 +27,9 @@ trait PresentsItemLinks
     {
         return [
             'itemLinks' => $this->itemLinksFor($record),
-            'itemLinkTargets' => $this->itemLinkTargets($record),
+            // Every record in five modules, only needed once someone opens the
+            // form to add a link, so the page asks for it then.
+            'itemLinkTargets' => Inertia::optional(fn (): array => $this->itemLinkTargets($record)),
             'itemLinkTypes' => ItemLinkType::options(),
             'itemLinkSource' => [
                 'type' => $record->getMorphClass(),
@@ -61,8 +65,14 @@ trait PresentsItemLinks
         foreach (ItemLink::modules() as $type => $class) {
             $records = [];
 
-            foreach ($class::query()->get() as $candidate) {
-                if (! $candidate instanceof Linkable || $candidate->is($record)) {
+            $candidates = $class::query()
+                ->when($record->getMorphClass() === $type, fn ($query) => $query->whereKeyNot($record->getKey()))
+                // A discarded radar item is not something to build on.
+                ->when($class === RadarItem::class, fn ($query) => $query->where('is_hidden', false))
+                ->get();
+
+            foreach ($candidates as $candidate) {
+                if (! $candidate instanceof Linkable) {
                     continue;
                 }
 

@@ -137,17 +137,26 @@ class MeasurePractice
      */
     private function radar(): array
     {
-        $items = RadarItem::query()->get(['triage_status']);
-        $triaged = $items->where('triage_status', '!=', TriageStatus::Pending)->count();
+        // Counted in the database: the other modules are written by hand, but
+        // the radar gains rows every hour from the feeds.
+        $counts = RadarItem::query()
+            ->toBase()
+            ->selectRaw('triage_status, count(*) as total')
+            ->groupBy('triage_status')
+            ->pluck('total', 'triage_status');
+
+        $count = fn (TriageStatus $status): int => (int) ($counts[$status->value] ?? 0);
+        $total = (int) $counts->sum();
+        $triaged = $total - $count(TriageStatus::Pending);
 
         return [
-            'total' => $items->count(),
-            'split' => $this->countByStatus($items, TriageStatus::cases()),
-            'triagedShare' => $this->share($triaged, $items->count()),
-            'relevantShare' => $this->share(
-                $items->where('triage_status', TriageStatus::Relevant)->count(),
-                $triaged,
+            'total' => $total,
+            'split' => array_map(
+                fn (TriageStatus $status): array => ['label' => $status->label(), 'value' => $count($status)],
+                TriageStatus::cases(),
             ),
+            'triagedShare' => $this->share($triaged, $total),
+            'relevantShare' => $this->share($count(TriageStatus::Relevant), $triaged),
             // Items that actually became work, which is the only reason to
             // subscribe to anything.
             'becameWork' => ItemLink::query()->where('source_type', 'radar_item')->distinct('source_id')->count('source_id'),

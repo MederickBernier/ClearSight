@@ -1,11 +1,12 @@
-import { Form, Link, useForm } from '@inertiajs/react';
-import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Form, Link, router, useForm } from '@inertiajs/react';
+import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
 import { usePermissions } from '@/hooks/use-permissions';
 import { destroy, store } from '@/routes/item-links';
 import type { ItemLink, ItemLinkProps } from '@/types';
@@ -96,32 +97,39 @@ export default function ItemLinks({
     itemLinkSource,
 }: ItemLinkProps) {
     const { canWrite } = usePermissions();
-    const [module, setModule] = useState(itemLinkTargets[0]?.type ?? '');
+    const [adding, setAdding] = useState(false);
+    const [module, setModule] = useState('');
 
+    const targets = itemLinkTargets ?? [];
+    const activeModule = module || targets[0]?.type || '';
     const records =
-        itemLinkTargets.find((group) => group.type === module)?.records ?? [];
+        targets.find((group) => group.type === activeModule)?.records ?? [];
 
     const form = useForm({
         source_type: itemLinkSource.type,
         source_id: itemLinkSource.id,
-        target_type: module,
-        target_id: records[0]?.id ?? 0,
+        target_type: '',
+        target_id: 0,
         link_type: itemLinkTypes[0]?.value ?? '',
         note: '',
     });
 
     const { data, setData, processing, errors, reset } = form;
 
-    const changeModule = (type: string) => {
-        const next =
-            itemLinkTargets.find((group) => group.type === type)?.records ?? [];
+    // Any visit, including the one after adding a link, replaces the props
+    // without the optional targets, so they are fetched whenever the form is
+    // open and they are missing.
+    const loading = adding && itemLinkTargets === undefined;
 
+    useEffect(() => {
+        if (loading) {
+            router.reload({ only: ['itemLinkTargets'] });
+        }
+    }, [loading]);
+
+    const changeModule = (type: string) => {
         setModule(type);
-        setData((current) => ({
-            ...current,
-            target_type: type,
-            target_id: next[0]?.id ?? 0,
-        }));
+        setData('target_id', 0);
     };
 
     return (
@@ -139,13 +147,47 @@ export default function ItemLinks({
                 canWrite={canWrite}
             />
 
-            {canWrite && itemLinkTargets.length > 0 && (
+            {canWrite && !adding && (
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setAdding(true)}
+                >
+                    <Plus /> Add a link
+                </Button>
+            )}
+
+            {canWrite && adding && loading && (
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Spinner /> Loading records…
+                </p>
+            )}
+
+            {canWrite && adding && !loading && targets.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                    Nothing else to link to yet.
+                </p>
+            )}
+
+            {canWrite && adding && !loading && targets.length > 0 && (
                 <form
                     onSubmit={(event) => {
                         event.preventDefault();
+                        // The picker's defaults are resolved at submit time,
+                        // since the records arrive after the form is created.
+                        form.transform((current) => ({
+                            ...current,
+                            target_type: activeModule,
+                            target_id:
+                                current.target_id || (records[0]?.id ?? 0),
+                        }));
                         form.submit(store(), {
                             preserveScroll: true,
-                            onSuccess: () => reset('note'),
+                            preserveState: true,
+                            onSuccess: () => {
+                                reset('note', 'target_id');
+                                setAdding(false);
+                            },
                         });
                     }}
                     className="space-y-4 rounded-xl border border-sidebar-border/70 p-4"
@@ -170,11 +212,11 @@ export default function ItemLinks({
                             <Label htmlFor="item_link_module">Module</Label>
                             <NativeSelect
                                 id="item_link_module"
-                                options={itemLinkTargets.map((group) => ({
+                                options={targets.map((group) => ({
                                     value: group.type,
                                     label: group.label,
                                 }))}
-                                value={module}
+                                value={activeModule}
                                 onChange={(event) =>
                                     changeModule(event.target.value)
                                 }
@@ -190,7 +232,9 @@ export default function ItemLinks({
                                     value: String(record.id),
                                     label: record.label,
                                 }))}
-                                value={String(data.target_id)}
+                                value={String(
+                                    data.target_id || (records[0]?.id ?? ''),
+                                )}
                                 onChange={(event) =>
                                     setData(
                                         'target_id',
@@ -215,9 +259,19 @@ export default function ItemLinks({
                         <InputError message={errors.note} />
                     </div>
 
-                    <Button type="submit" disabled={processing}>
-                        Add link
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                        <Button type="submit" disabled={processing}>
+                            {processing && <Spinner />}
+                            Add link
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setAdding(false)}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
                 </form>
             )}
         </section>

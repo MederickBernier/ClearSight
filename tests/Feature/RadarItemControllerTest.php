@@ -2,8 +2,10 @@
 
 use App\Enums\TriageStatus;
 use App\Models\FeedSource;
+use App\Models\ItemLink;
 use App\Models\RadarItem;
 use App\Models\User;
+use App\Models\VettingItem;
 use Illuminate\Support\Facades\Http;
 use Inertia\Testing\AssertableInertia;
 
@@ -266,4 +268,29 @@ test('changing the triage call restamps the triage time and drops a stale note',
 
     expect($item->triaged_at->isToday())->toBeTrue()
         ->and($item->relevance_note)->toBeNull();
+});
+
+test('undated items sort after dated ones instead of sitting on top', function () {
+    RadarItem::factory()->create(['title' => 'Undated', 'published_at' => null]);
+    RadarItem::factory()->create(['title' => 'Older', 'published_at' => now()->subWeek()]);
+    RadarItem::factory()->create(['title' => 'Newer', 'published_at' => now()->subDay()]);
+
+    $this->get(route('radar.index'))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('items.data.0.title', 'Newer')
+            ->where('items.data.1.title', 'Older')
+            ->where('items.data.2.title', 'Undated'));
+});
+
+test('pruning removes only old discarded items that nothing links to', function () {
+    $old = RadarItem::factory()->discarded()->create(['fetched_at' => now()->subYears(2)]);
+    $recent = RadarItem::factory()->discarded()->create(['fetched_at' => now()->subMonth()]);
+    $oldButKept = RadarItem::factory()->relevant()->create(['fetched_at' => now()->subYears(2)]);
+    $oldButLinked = RadarItem::factory()->discarded()->create(['fetched_at' => now()->subYears(2)]);
+    ItemLink::factory()->between($oldButLinked, VettingItem::factory()->create())->create();
+
+    $this->artisan('model:prune', ['--model' => [RadarItem::class]])->assertSuccessful();
+
+    expect(RadarItem::pluck('id')->sort()->values()->all())
+        ->toBe(collect([$recent->id, $oldButKept->id, $oldButLinked->id])->sort()->values()->all());
 });

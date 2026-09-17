@@ -55,7 +55,9 @@ class RadarItemController extends Controller
                         ->where('title', 'ilike', '%'.addcslashes($search, '%_\\').'%')
                         ->orWhere('summary', 'ilike', '%'.addcslashes($search, '%_\\').'%'),
                 ))
-                ->orderByDesc('published_at')
+                // Postgres puts nulls first on a plain DESC, which pinned every
+                // undated item to the top of the queue for good.
+                ->orderByRaw('published_at desc nulls last')
                 ->orderByDesc('id')
                 ->paginate(25)
                 ->withQueryString(),

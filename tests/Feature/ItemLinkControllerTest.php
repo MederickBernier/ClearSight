@@ -164,21 +164,28 @@ test('a show page renders both link directions with somewhere to click through t
             ->where('itemLinkSource.type', 'vetting_item'));
 });
 
-test('a show page offers every other record as a link target', function () {
+test('a show page offers every other record as a link target, when asked for them', function () {
     $vetting = VettingItem::factory()->create();
     VettingItem::factory()->create();
     Prototype::factory()->count(2)->create();
     DecisionRecord::factory()->create();
+    RadarItem::factory()->discarded()->create();
+
+    $this->get(route('vetting.show', $vetting))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->missing('itemLinkTargets'));
 
     $this->get(route('vetting.show', $vetting))
         ->assertOk()
         ->assertInertia(function (AssertableInertia $page) {
-            $groups = collect($page->toArray()['props']['itemLinkTargets']);
+            $page->reloadOnly('itemLinkTargets', function (AssertableInertia $reload) {
+                $groups = collect($reload->toArray()['props']['itemLinkTargets']);
 
-            expect($groups->pluck('type')->all())
-                ->toBe(['decision_record', 'vetting_item', 'prototype'])
-                ->and($groups->firstWhere('type', 'vetting_item')['records'])->toHaveCount(1)
-                ->and($groups->firstWhere('type', 'prototype')['records'])->toHaveCount(2);
+                expect($groups->pluck('type')->all())
+                    ->toBe(['decision_record', 'vetting_item', 'prototype'])
+                    ->and($groups->firstWhere('type', 'vetting_item')['records'])->toHaveCount(1)
+                    ->and($groups->firstWhere('type', 'prototype')['records'])->toHaveCount(2);
+            });
         });
 });
 

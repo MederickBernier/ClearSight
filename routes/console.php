@@ -9,3 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('clearsight:fetch-feeds')->hourly()->withoutOverlapping();
+
+// Only RadarItem is prunable today: old discarded feed items with no links.
+Schedule::command('model:prune')->daily()->withoutOverlapping();
