@@ -22,7 +22,7 @@ class RenderMarkdownPdf
         return Pdf::loadView('pdf.document', [
             'title' => $title,
             'html' => ($this->toHtml)($markdown) ?? '',
-            'generatedAt' => CarbonImmutable::now()->toDateString(),
+            'generatedAt' => CarbonImmutable::now(config()->string('app.display_timezone'))->toDateString(),
         ])->setPaper('a4');
     }
 }

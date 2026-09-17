@@ -101,3 +101,12 @@ test('a read-only account cannot promote', function () {
 
     expect(VettingItem::count())->toBe(0);
 });
+
+test('a promotion evening in the team timezone is dated that day, not the UTC one', function () {
+    config(['app.display_timezone' => 'America/Toronto']);
+    $this->travelTo('2026-09-17 02:00:00');
+
+    $this->post(route('radar.promote', RadarItem::factory()->create()));
+
+    expect(VettingItem::sole()->date_raised->toDateString())->toBe('2026-09-16');
+});

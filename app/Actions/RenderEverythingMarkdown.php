@@ -37,7 +37,7 @@ class RenderEverythingMarkdown
         $lines = [
             '# ClearSight',
             '',
-            '*Everything recorded, as of '.CarbonImmutable::now()->toDateString().'.*',
+            '*Everything recorded, as of '.CarbonImmutable::now(config()->string('app.display_timezone'))->toDateString().'.*',
         ];
 
         $this->projects($lines);
@@ -49,7 +49,7 @@ class RenderEverythingMarkdown
 
     public function basename(): string
     {
-        return 'clearsight-'.CarbonImmutable::now()->toDateString();
+        return 'clearsight-'.CarbonImmutable::now(config()->string('app.display_timezone'))->toDateString();
     }
 
     /**

@@ -68,6 +68,14 @@ return [
     'timezone' => 'UTC',
 
     /*
+    | The timezone people using the app live in. Storage stays in UTC; this only
+    | decides which calendar day "today" is when the server stamps or compares a
+    | date, and which day an export prints for a timestamp.
+    */
+
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'UTC'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------

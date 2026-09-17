@@ -81,7 +81,7 @@ class VettingItem extends Model implements Linkable
     {
         static::saving(function (self $item): void {
             if ($item->status->isResolved()) {
-                $item->date_resolved ??= now();
+                $item->date_resolved ??= now(config()->string('app.display_timezone'));
 
                 return;
             }

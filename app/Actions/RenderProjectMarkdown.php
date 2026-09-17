@@ -44,7 +44,7 @@ class RenderProjectMarkdown implements ExportsToMarkdown
 
         if ($project->isArchived()) {
             $lines[] = '';
-            $lines[] = '*Archived '.$project->archived_at?->toDateString().'.*';
+            $lines[] = '*Archived '.$project->archived_at?->setTimezone(config()->string('app.display_timezone'))->toDateString().'.*';
         }
 
         if ($project->description !== null && trim($project->description) !== '') {

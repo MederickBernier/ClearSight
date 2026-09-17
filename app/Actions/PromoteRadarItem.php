@@ -35,7 +35,7 @@ class PromoteRadarItem
                 'source_detail' => $item->feedSource instanceof FeedSource
                     ? $item->feedSource->name
                     : __('Tech radar'),
-                'date_raised' => now(),
+                'date_raised' => now(config()->string('app.display_timezone')),
                 'proposal_description' => $this->description($item),
                 'status' => VettingStatus::New,
                 'external_url' => $item->url,
@@ -55,7 +55,7 @@ class PromoteRadarItem
                 'title' => $item->title,
                 'status' => PrototypeStatus::Planned,
                 'hypothesis' => $this->description($item),
-                'date_started' => now(),
+                'date_started' => now(config()->string('app.display_timezone')),
             ]);
 
             $this->link($item, $prototype, __('Worth trying, from the tech radar'));

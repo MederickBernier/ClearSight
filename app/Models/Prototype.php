@@ -89,7 +89,7 @@ class Prototype extends Model implements Linkable
     {
         static::saving(function (self $prototype): void {
             if ($prototype->status->isFinished()) {
-                $prototype->date_completed ??= now();
+                $prototype->date_completed ??= now(config()->string('app.display_timezone'));
 
                 return;
             }

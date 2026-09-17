@@ -40,8 +40,8 @@ class RenderDecisionRecordMarkdown implements ExportsToMarkdown
             ['Author', $record->author],
             ['Deciders', $record->deciders],
             ['Affects', $record->affects],
-            ['Created', $record->created_at?->toDateString()],
-            ['Updated', $record->updated_at?->toDateString()],
+            ['Created', $record->created_at?->setTimezone(config()->string('app.display_timezone'))->toDateString()],
+            ['Updated', $record->updated_at?->setTimezone(config()->string('app.display_timezone'))->toDateString()],
         ]);
 
         $this->section($lines, $section.' Context', $record->proposal_context);

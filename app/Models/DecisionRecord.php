@@ -145,7 +145,7 @@ class DecisionRecord extends Model implements Linkable
     public function scopeDueForReview(Builder $query, ?CarbonImmutable $on = null): void
     {
         $query->whereNotNull('next_review_at')
-            ->whereDate('next_review_at', '<=', $on ?? CarbonImmutable::now());
+            ->whereDate('next_review_at', '<=', $on ?? CarbonImmutable::now(config()->string('app.display_timezone')));
     }
 
     /**

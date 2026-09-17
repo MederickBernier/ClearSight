@@ -59,7 +59,7 @@ class DashboardController extends Controller
             return $this->attention;
         }
 
-        $today = CarbonImmutable::now();
+        $today = CarbonImmutable::now(config()->string('app.display_timezone'));
         $items = [];
 
         foreach (SecurityNote::query()

@@ -71,7 +71,7 @@ class SecurityNote extends Model implements Linkable
     {
         $query->where('status', SecurityNoteStatus::Deferred)
             ->whereNotNull('deferred_until')
-            ->whereDate('deferred_until', '<=', $on ?? CarbonImmutable::now());
+            ->whereDate('deferred_until', '<=', $on ?? CarbonImmutable::now(config()->string('app.display_timezone')));
     }
 
     /**
@@ -117,7 +117,7 @@ class SecurityNote extends Model implements Linkable
 
         static::saving(function (self $note): void {
             if ($note->status->isResolved()) {
-                $note->date_resolved ??= now();
+                $note->date_resolved ??= now(config()->string('app.display_timezone'));
 
                 return;
             }

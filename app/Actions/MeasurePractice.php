@@ -182,7 +182,7 @@ class MeasurePractice
     private function perQuarter($records): array
     {
         $quarters = [];
-        $cursor = CarbonImmutable::now()->startOfQuarter()->subQuarters(7);
+        $cursor = CarbonImmutable::now(config()->string('app.display_timezone'))->startOfQuarter()->subQuarters(7);
 
         for ($i = 0; $i < 8; $i++) {
             $start = $cursor->addQuarters($i);
