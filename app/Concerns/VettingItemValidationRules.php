@@ -18,7 +18,9 @@ trait VettingItemValidationRules
             'title' => ['required', 'string', 'max:255'],
             'source_type' => ['required', new Enum(VettingSourceType::class)],
             'source_detail' => ['nullable', 'string', 'max:255'],
-            'date_raised' => ['required', 'date'],
+            // Recorded after the fact, never ahead of it: a future date here
+            // turns into a negative time-to-resolve in the metrics.
+            'date_raised' => ['required', 'date', 'before_or_equal:'.now(config()->string('app.display_timezone'))->toDateString()],
             'proposal_description' => ['required', 'string'],
             'assessment' => ['nullable', 'string'],
             'status' => ['required', new Enum(VettingStatus::class)],

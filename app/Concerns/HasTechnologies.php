@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasTechnologies
 {
     /**
+     * Usages are a morph relation with no foreign key to cascade, so they go
+     * with the record here rather than lingering in the technology counts.
+     */
+    public static function bootHasTechnologies(): void
+    {
+        static::deleting(function (self $record): void {
+            $record->technologyUsages()->delete();
+        });
+    }
+
+    /**
      * @return MorphMany<TechnologyUsage, $this>
      */
     public function technologyUsages(): MorphMany

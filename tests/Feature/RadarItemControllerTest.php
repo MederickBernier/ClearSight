@@ -256,3 +256,14 @@ test('a discarded item stays out of a search of the open queue', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page->has('items.data', 1));
 });
+
+test('changing the triage call restamps the triage time and drops a stale note', function () {
+    $item = RadarItem::factory()->relevant()->create(['triaged_at' => now()->subWeek()]);
+
+    $this->patch(route('radar.triage', $item), ['triage_status' => TriageStatus::Discarded->value]);
+
+    $item->refresh();
+
+    expect($item->triaged_at->isToday())->toBeTrue()
+        ->and($item->relevance_note)->toBeNull();
+});

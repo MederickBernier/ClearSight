@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Enums\TriageStatus;
 use App\Models\FeedSource;
 use App\Models\RadarItem;
 use Exception;
@@ -107,28 +108,24 @@ class FetchFeedSource
     }
 
     /**
+     * Existing urls are skipped by the unique index rather than a lookup, so a
+     * scheduled run and a manual scan fetching the same article at once cannot
+     * collide, and one duplicate never aborts the rest of the feed.
+     *
      * @param  list<array{title: string, url: string, summary: string|null, published_at: string|null}>  $entries
      */
     private function store(FeedSource $source, array $entries): int
     {
-        $seen = RadarItem::query()
-            ->whereIn('url', array_column($entries, 'url'))
-            ->pluck('url')
-            ->all();
+        $now = now();
 
-        $stored = 0;
-
-        foreach ($entries as $entry) {
-            if (in_array($entry['url'], $seen, true)) {
-                continue;
-            }
-
-            $source->radarItems()->create($entry);
-            $seen[] = $entry['url'];
-            $stored++;
-        }
-
-        return $stored;
+        return RadarItem::query()->insertOrIgnore(array_map(fn (array $entry): array => [
+            ...$entry,
+            'feed_source_id' => $source->id,
+            'triage_status' => TriageStatus::Pending->value,
+            'fetched_at' => $now,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $entries));
     }
 
     /**
@@ -179,7 +176,9 @@ class FetchFeedSource
             // Only web links: a feed is free to put javascript: or file: in a
             // link, and these URLs are rendered as hrefs and copied into work.
             fn (array $entry): bool => $entry['title'] !== ''
-                && preg_match('#^https?://#i', $entry['url']) === 1,
+                && preg_match('#^https?://#i', $entry['url']) === 1
+                // Past this a url is noise, and the unique index has a size limit.
+                && strlen($entry['url']) <= 2048,
         ));
     }
 

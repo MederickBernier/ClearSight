@@ -162,3 +162,11 @@ test('the show page renders markdown and strips raw html', function () {
                 && ! str_contains($html, '<script>'))
             ->where('html.result', null));
 });
+
+test('picking an abandoned spike back up drops the abandoned reason', function () {
+    $prototype = Prototype::factory()->abandoned()->create();
+
+    $prototype->update(['status' => PrototypeStatus::InProgress]);
+
+    expect($prototype->refresh()->abandoned_reason)->toBeNull();
+});

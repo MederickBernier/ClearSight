@@ -13,6 +13,19 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasItemLinks
 {
     /**
+     * The link table's morph columns carry no foreign key, so nothing in the
+     * database removes a link when either end is deleted. Left behind, those
+     * rows keep counting in the metrics and point at pages that 404.
+     */
+    public static function bootHasItemLinks(): void
+    {
+        static::deleting(function (self $record): void {
+            $record->outgoingItemLinks()->delete();
+            $record->incomingItemLinks()->delete();
+        });
+    }
+
+    /**
      * @return MorphMany<ItemLink, $this>
      */
     public function outgoingItemLinks(): MorphMany

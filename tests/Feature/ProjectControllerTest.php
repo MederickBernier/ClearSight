@@ -216,3 +216,17 @@ test('a note needs a title and a body', function () {
 
     expect(ProjectNote::count())->toBe(0);
 });
+
+test('a prefix rename that would collide with another decision is refused and changes nothing', function () {
+    $project = Project::factory()->create(['prefix' => 'VNG']);
+    DecisionRecord::factory()->create(['project_id' => $project->id, 'category' => 'ARCH', 'sequence' => 1]);
+    DecisionRecord::factory()->create(['project_id' => null, 'project_prefix' => 'NEW', 'category' => 'ARCH', 'sequence' => 1]);
+
+    $this->put(route('projects.update', $project), [
+        'name' => $project->name,
+        'prefix' => 'NEW',
+    ])->assertSessionHasErrors('prefix');
+
+    expect($project->refresh()->prefix)->toBe('VNG')
+        ->and(DecisionRecord::where('project_id', $project->id)->sole()->project_prefix)->toBe('VNG');
+});

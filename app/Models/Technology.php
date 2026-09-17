@@ -38,6 +38,7 @@ class Technology extends Model
     protected function casts(): array
     {
         return [
+            'notes' => 'encrypted',
             'category' => TechnologyCategory::class,
             'ring' => TechnologyRing::class,
             'status' => TechnologyStatus::class,

@@ -6,6 +6,8 @@ use App\Models\Project;
 use App\Models\Prototype;
 use App\Models\RadarItem;
 use App\Models\SecurityNote;
+use App\Models\Technology;
+use App\Models\TechnologyUsage;
 use App\Models\User;
 use App\Models\VettingItem;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +40,21 @@ test('the substance of the work is not readable in the database', function () {
         ->and(rawRow('vetting_items', $vetting->id)->title)->not->toContain('Offline')
         ->and(rawRow('prototypes', $prototype->id)->hypothesis)->not->toContain('service worker')
         ->and(rawRow('security_notes', $finding->id)->finding)->not->toContain('bucket policy');
+});
+
+test('what is written about a technology is not readable in the database', function () {
+    $technology = Technology::factory()->create(['name' => 'PostgreSQL', 'notes' => 'Our default datastore.']);
+    $usage = TechnologyUsage::factory()->on(Project::factory()->create())->create([
+        'technology_id' => $technology->id,
+        'role' => 'primary datastore',
+        'notes' => 'Replicated across two zones.',
+    ]);
+
+    expect(rawRow('technologies', $technology->id)->name)->toBe('PostgreSQL')
+        ->and(rawRow('technologies', $technology->id)->notes)->not->toContain('default')
+        ->and(rawRow('technology_usages', $usage->id)->role)->not->toContain('primary')
+        ->and(rawRow('technology_usages', $usage->id)->notes)->not->toContain('zones')
+        ->and($usage->fresh()->role)->toBe('primary datastore');
 });
 
 test('what the app has to sort and filter on stays readable', function () {

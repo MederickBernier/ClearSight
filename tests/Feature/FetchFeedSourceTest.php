@@ -281,3 +281,28 @@ XML)]);
 
     expect(RadarItem::pluck('url')->all())->toBe(['https://example.test/ok']);
 });
+
+test('a long link or a repeated one does not cost the rest of the feed', function () {
+    $long = 'https://example.test/article?'.str_repeat('utm=tracking&', 30);
+    $escaped = htmlspecialchars($long, ENT_XML1);
+    RadarItem::factory()->create(['url' => 'https://example.test/seen']);
+
+    Http::fake(['*' => Http::response(<<<XML
+<?xml version="1.0"?>
+<rss version="2.0"><channel>
+  <item><title>Long</title><link>{$escaped}</link></item>
+  <item><title>Seen before</title><link>https://example.test/seen</link></item>
+  <item><title>Listed twice</title><link>https://example.test/twice</link></item>
+  <item><title>Listed twice again</title><link>https://example.test/twice</link></item>
+  <item><title>Last</title><link>https://example.test/last</link></item>
+</channel></rss>
+XML)]);
+
+    $source = FeedSource::factory()->create();
+
+    expect(app(FetchFeedSource::class)($source))->toBe(3)
+        ->and($source->refresh()->last_error)->toBeNull()
+        ->and(RadarItem::where('url', $long)->exists())->toBeTrue()
+        ->and(RadarItem::where('url', 'https://example.test/last')->sole()->triage_status)
+        ->toBe(TriageStatus::Pending);
+});

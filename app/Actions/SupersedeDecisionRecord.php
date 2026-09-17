@@ -25,6 +25,13 @@ class SupersedeDecisionRecord
     public function __invoke(DecisionRecord $record, array $input): DecisionRecord
     {
         return DB::transaction(function () use ($record, $input): DecisionRecord {
+            // Two supersessions in the same series would otherwise both read
+            // the same highest number. The lock is held until the transaction
+            // ends, so the second waits and then sees the first one's row.
+            DB::select('select pg_advisory_xact_lock(hashtext(?))', [
+                'decision-sequence|'.$record->project_prefix.'|'.$record->category,
+            ]);
+
             $successor = DecisionRecord::create([
                 'project_id' => $record->project_id,
                 'project_prefix' => $record->project_prefix,

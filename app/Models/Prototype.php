@@ -87,6 +87,13 @@ class Prototype extends Model implements Linkable
      */
     protected static function booted(): void
     {
+        // Why a spike was abandoned stops being true once it is picked back up.
+        static::saving(function (self $prototype): void {
+            if ($prototype->status !== PrototypeStatus::Abandoned) {
+                $prototype->abandoned_reason = null;
+            }
+        });
+
         static::saving(function (self $prototype): void {
             if ($prototype->status->isFinished()) {
                 $prototype->date_completed ??= now(config()->string('app.display_timezone'));

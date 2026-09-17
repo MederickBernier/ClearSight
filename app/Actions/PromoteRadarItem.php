@@ -27,6 +27,12 @@ class PromoteRadarItem
     public function toVettingItem(RadarItem $item): VettingItem
     {
         return DB::transaction(function () use ($item): VettingItem {
+            $existing = $this->promotedTarget($item, 'vetting_item');
+
+            if ($existing instanceof VettingItem) {
+                return $existing;
+            }
+
             $vettingItem = VettingItem::create([
                 'title' => $item->title,
                 'source_type' => VettingSourceType::TechRadar,
@@ -51,6 +57,12 @@ class PromoteRadarItem
     public function toPrototype(RadarItem $item): Prototype
     {
         return DB::transaction(function () use ($item): Prototype {
+            $existing = $this->promotedTarget($item, 'prototype');
+
+            if ($existing instanceof Prototype) {
+                return $existing;
+            }
+
             $prototype = Prototype::create([
                 'title' => $item->title,
                 'status' => PrototypeStatus::Planned,
@@ -112,6 +124,23 @@ class PromoteRadarItem
         $lines[] = '['.$item->title.']('.$item->url.')';
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * The work this item already produced, if any, read under a lock on the
+     * item so a double click or a second tab waits for the first promotion
+     * and then lands on the same record instead of making another.
+     */
+    private function promotedTarget(RadarItem $item, string $targetType): ?Model
+    {
+        RadarItem::query()->whereKey($item->getKey())->lockForUpdate()->first();
+
+        return ItemLink::query()
+            ->where('source_type', $item->getMorphClass())
+            ->where('source_id', $item->getKey())
+            ->where('target_type', $targetType)
+            ->first()
+            ?->target;
     }
 
     /**

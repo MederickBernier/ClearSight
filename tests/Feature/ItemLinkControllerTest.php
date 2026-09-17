@@ -6,6 +6,7 @@ use App\Models\ItemLink;
 use App\Models\Prototype;
 use App\Models\RadarItem;
 use App\Models\SecurityNote;
+use App\Models\TechnologyUsage;
 use App\Models\User;
 use App\Models\VettingItem;
 use Inertia\Testing\AssertableInertia;
@@ -187,4 +188,20 @@ test('decision records label themselves by document id in a link table', functio
     ]);
 
     expect($decision->linkLabel())->toStartWith('VNG-ARCH-003 — ');
+});
+
+test('deleting a record takes its links and technology entries with it', function () {
+    $radar = RadarItem::factory()->create();
+    $prototype = Prototype::factory()->create();
+    $vetting = VettingItem::factory()->create();
+
+    ItemLink::factory()->between($radar, $prototype)->create();
+    ItemLink::factory()->between($prototype, $vetting)->create();
+    $keep = ItemLink::factory()->between($radar, $vetting)->create();
+    TechnologyUsage::factory()->on($prototype)->create();
+
+    $this->delete(route('prototypes.destroy', $prototype))->assertRedirect();
+
+    expect(ItemLink::pluck('id')->all())->toBe([$keep->id])
+        ->and(TechnologyUsage::count())->toBe(0);
 });

@@ -50,11 +50,19 @@ class StoreTechnologyUsageRequest extends FormRequest
                     return;
                 }
 
-                $exists = TechnologyUsage::query()
+                $duplicates = TechnologyUsage::query()
                     ->where('technology_id', $this->input('technology_id'))
                     ->where('usable_type', $this->input('usable_type'))
-                    ->where('usable_id', $this->input('usable_id'))
-                    ->exists();
+                    ->where('usable_id', $this->input('usable_id'));
+
+                // The entry being edited is not a duplicate of itself.
+                $current = $this->route('technologyUsage');
+
+                if ($current instanceof TechnologyUsage) {
+                    $duplicates->whereKeyNot($current->id);
+                }
+
+                $exists = $duplicates->exists();
 
                 if ($exists) {
                     $validator->errors()->add(

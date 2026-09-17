@@ -4,6 +4,7 @@ use App\Enums\DecisionStatus;
 use App\Models\DecisionLink;
 use App\Models\DecisionOption;
 use App\Models\DecisionRecord;
+use App\Models\Project;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
@@ -166,4 +167,18 @@ test('the show page exposes both link directions to the frontend', function () {
             ->has('record.outgoing_links', 1)
             ->has('record.incoming_links', 1)
             ->where('record.outgoing_links.0.target.document_id', $other->document_id));
+});
+
+test('a decision filed under a project is checked for uniqueness under that project prefix', function () {
+    $project = Project::factory()->create(['prefix' => 'VNG']);
+    DecisionRecord::factory()->create(['project_id' => $project->id, 'category' => 'ARCH', 'sequence' => 1]);
+
+    // A stale form still sending an old prefix must not slip past validation
+    // and then collide once the project prefix is applied on save.
+    $this->post(route('decisions.store'), decisionPayload([
+        'project_id' => $project->id,
+        'project_prefix' => 'OLD',
+    ]))->assertSessionHasErrors('sequence');
+
+    expect(DecisionRecord::count())->toBe(1);
 });

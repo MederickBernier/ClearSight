@@ -23,7 +23,9 @@ class TechnologyUsageController extends Controller
 
     public function update(StoreTechnologyUsageRequest $request, TechnologyUsage $technologyUsage): RedirectResponse
     {
-        $technologyUsage->update($request->validated());
+        // Which technology and which record are what the entry is; moving it
+        // is removing it and recording another.
+        $technologyUsage->update($request->safe()->only(['version', 'role', 'notes']));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Entry updated.')]);
 

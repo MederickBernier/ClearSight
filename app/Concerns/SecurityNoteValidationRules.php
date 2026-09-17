@@ -44,7 +44,9 @@ trait SecurityNoteValidationRules
                 'required_if:status,'.SecurityNoteStatus::Deferred->value,
                 'date',
             ],
-            'date_flagged' => ['required', 'date'],
+            // Recorded after the fact, never ahead of it: a future date here
+            // turns into a negative time-to-resolve in the metrics.
+            'date_flagged' => ['required', 'date', 'before_or_equal:'.now(config()->string('app.display_timezone'))->toDateString()],
             'external_url' => ['nullable', 'url:http,https', 'max:255'],
         ];
     }

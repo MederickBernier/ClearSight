@@ -35,7 +35,9 @@ trait PrototypeValidationRules
             'is_reusable' => ['nullable', 'boolean'],
             'reusability_note' => ['nullable', 'string'],
             'repo_reference' => ['nullable', 'string', 'max:255'],
-            'date_started' => ['required', 'date'],
+            // Recorded after the fact, never ahead of it: a future date here
+            // turns into a negative time-to-resolve in the metrics.
+            'date_started' => ['required', 'date', 'before_or_equal:'.now(config()->string('app.display_timezone'))->toDateString()],
         ];
     }
 

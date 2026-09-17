@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\PromoteRadarItem;
 use App\Enums\ItemLinkType;
 use App\Enums\TriageStatus;
 use App\Enums\VettingSourceType;
@@ -109,4 +110,16 @@ test('a promotion evening in the team timezone is dated that day, not the UTC on
     $this->post(route('radar.promote', RadarItem::factory()->create()));
 
     expect(VettingItem::sole()->date_raised->toDateString())->toBe('2026-09-16');
+});
+
+test('a promotion that races past the controller check lands on the same record', function () {
+    $item = RadarItem::factory()->create();
+    $promote = app(PromoteRadarItem::class);
+
+    $first = $promote->toVettingItem($item);
+    $second = $promote->toVettingItem($item->fresh());
+
+    expect($second->is($first))->toBeTrue()
+        ->and(VettingItem::count())->toBe(1)
+        ->and(ItemLink::count())->toBe(1);
 });

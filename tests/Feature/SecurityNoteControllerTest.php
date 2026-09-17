@@ -164,3 +164,15 @@ test('the show page renders markdown and strips raw html', function () {
                 && ! str_contains($html, '<script>'))
             ->where('html.deferral_reason', null));
 });
+
+test('a finding that stops being deferred, or turns out to be an issue, drops the old reasons', function () {
+    $deferred = SecurityNote::factory()->deferred()->create();
+    $deferred->update(['status' => SecurityNoteStatus::Routed]);
+
+    $nonIssue = SecurityNote::factory()->nonIssue()->create();
+    $nonIssue->update(['is_issue' => true]);
+
+    expect($deferred->refresh()->deferral_reason)->toBeNull()
+        ->and($deferred->deferred_until)->toBeNull()
+        ->and($nonIssue->refresh()->non_issue_reason)->toBeNull();
+});

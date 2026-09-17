@@ -30,6 +30,17 @@ class TechnologyUsage extends Model
     use HasFactory;
 
     /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'role' => 'encrypted',
+            'notes' => 'encrypted',
+        ];
+    }
+
+    /**
      * The records that can carry a technology, keyed by the alias stored in the
      * morph column.
      *

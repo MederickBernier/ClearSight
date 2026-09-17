@@ -206,3 +206,20 @@ test('a read-only account can read the inventory but not change it', function ()
         'technology_id' => $technology->id, 'usable_type' => 'project', 'usable_id' => 1,
     ])->assertForbidden();
 });
+
+test('an entry can be edited without tripping the duplicate check, but not moved', function () {
+    $usage = TechnologyUsage::factory()->on(Project::factory()->create())->create(['version' => '17']);
+    $elsewhere = Project::factory()->create();
+
+    $this->put(route('technology-usages.update', $usage), [
+        'technology_id' => $usage->technology_id,
+        'usable_type' => 'project',
+        'usable_id' => $elsewhere->id,
+        'version' => '18',
+    ])->assertSessionHasNoErrors();
+
+    $usage->refresh();
+
+    expect($usage->version)->toBe('18')
+        ->and($usage->usable_id)->not->toBe($elsewhere->id);
+});

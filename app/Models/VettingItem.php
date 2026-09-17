@@ -79,6 +79,14 @@ class VettingItem extends Model implements Linkable
      */
     protected static function booted(): void
     {
+        // A reason for rejecting only describes a rejected item; kept after the
+        // item is reopened it would show and export as if still true.
+        static::saving(function (self $item): void {
+            if ($item->status !== VettingStatus::Rejected) {
+                $item->rejection_reason = null;
+            }
+        });
+
         static::saving(function (self $item): void {
             if ($item->status->isResolved()) {
                 $item->date_resolved ??= now(config()->string('app.display_timezone'));

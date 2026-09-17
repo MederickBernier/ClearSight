@@ -3,11 +3,26 @@
 namespace App\Concerns;
 
 use App\Enums\DecisionStatus;
+use App\Models\Project;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 trait DecisionRecordValidationRules
 {
+    /**
+     * A decision filed under a project takes that project's prefix when it is
+     * saved, so the uniqueness check has to look at that prefix too, not
+     * whatever the form happened to send.
+     */
+    protected function prepareForValidation(): void
+    {
+        $prefix = Project::query()->whereKey($this->integer('project_id'))->value('prefix');
+
+        if ($this->filled('project_id') && is_string($prefix)) {
+            $this->merge(['project_prefix' => $prefix]);
+        }
+    }
+
     /**
      * @return array<string,mixed>
      */

@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Decisions;
 
+use App\Enums\DecisionStatus;
+use App\Models\DecisionRecord;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class SupersedeDecisionRecordRequest extends FormRequest
 {
@@ -26,6 +29,25 @@ class SupersedeDecisionRecordRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'scope_note' => ['nullable', 'string', 'max:255'],
             'impact_summary' => ['nullable', 'string'],
+        ];
+    }
+
+    /**
+     * A record that has already been replaced outright has nothing left to
+     * supersede; a second replacement would fork the history.
+     *
+     * @return array<int, callable>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $record = $this->route('decisionRecord');
+
+                if ($record instanceof DecisionRecord && $record->status === DecisionStatus::Superseded) {
+                    $validator->errors()->add('title', __('This decision has already been superseded.'));
+                }
+            },
         ];
     }
 

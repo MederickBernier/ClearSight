@@ -155,3 +155,12 @@ test('a read-only account cannot supersede', function () {
     expect(DecisionRecord::count())->toBe(1)
         ->and($record->refresh()->status)->toBe(DecisionStatus::Decided);
 });
+
+test('a decision already replaced outright cannot be superseded again', function () {
+    $record = DecisionRecord::factory()->create(['status' => DecisionStatus::Superseded]);
+
+    $this->post(route('decisions.supersede', $record), ['title' => 'A second replacement'])
+        ->assertSessionHasErrors('title');
+
+    expect(DecisionRecord::count())->toBe(1);
+});

@@ -75,6 +75,11 @@ class RadarItem extends Model implements Linkable
         });
 
         static::saving(function (self $item): void {
+            // The note says why an item is relevant, so it goes when it is not.
+            if ($item->triage_status !== TriageStatus::Relevant) {
+                $item->relevance_note = null;
+            }
+
             if ($item->triage_status === TriageStatus::Pending) {
                 $item->triaged_at = null;
                 $item->is_hidden = false;
@@ -82,7 +87,12 @@ class RadarItem extends Model implements Linkable
                 return;
             }
 
-            $item->triaged_at ??= now();
+            // Stamped on every change of call, so it records when the item was
+            // last judged rather than when it was first looked at.
+            if ($item->triaged_at === null || $item->isDirty('triage_status')) {
+                $item->triaged_at = now();
+            }
+
             $item->is_hidden = $item->triage_status === TriageStatus::Discarded;
         });
     }

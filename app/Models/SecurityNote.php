@@ -108,10 +108,16 @@ class SecurityNote extends Model implements Linkable
      */
     protected static function booted(): void
     {
-        // A deferral date only means anything while the finding is deferred.
+        // A deferral, and its reason, only mean anything while the finding is
+        // deferred; the same goes for a non-issue reason once it is an issue.
         static::saving(function (self $note): void {
             if ($note->status !== SecurityNoteStatus::Deferred) {
                 $note->deferred_until = null;
+                $note->deferral_reason = null;
+            }
+
+            if ($note->is_issue) {
+                $note->non_issue_reason = null;
             }
         });
 

@@ -10,6 +10,7 @@ use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -124,9 +125,11 @@ class ProjectController extends Controller
      */
     public function update(StoreProjectRequest $request, Project $project): RedirectResponse
     {
-        $project->update($request->validated());
+        DB::transaction(function () use ($request, $project): void {
+            $project->update($request->validated());
 
-        $project->decisionRecords()->update(['project_prefix' => $project->prefix]);
+            $project->decisionRecords()->update(['project_prefix' => $project->prefix]);
+        });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Project updated.')]);
 

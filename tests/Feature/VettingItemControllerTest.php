@@ -142,3 +142,19 @@ test('the show page renders markdown and strips raw html', function () {
                 && ! str_contains($html, '<script>'))
             ->where('html.assessment', null));
 });
+
+test('reopening a rejected item drops the rejection reason', function () {
+    $item = VettingItem::factory()->rejected()->create();
+
+    $item->update(['status' => VettingStatus::InProgress]);
+
+    expect($item->refresh()->rejection_reason)->toBeNull();
+});
+
+test('an item cannot be raised on a day that has not happened yet', function () {
+    $this->post(route('vetting.store'), vettingPayload([
+        'date_raised' => now()->addDays(2)->toDateString(),
+    ]))->assertSessionHasErrors('date_raised');
+
+    expect(VettingItem::count())->toBe(0);
+});
