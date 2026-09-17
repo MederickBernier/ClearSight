@@ -81,8 +81,15 @@ test('it gathers every module, newest first', function () {
         ->assertInertia(function (AssertableInertia $page) {
             $events = collect(timelineFor($page));
 
+            // Calendar dates stay bare days; timestamps carry their offset so
+            // the browser can place them in the viewer's own timezone.
             expect($events->pluck('date')->all())->toBe([
-                '2026-04-01', '2026-03-01', '2026-02-15', '2026-02-01', '2026-01-15', '2026-01-01',
+                '2026-04-01',
+                '2026-03-01T00:00:00+00:00',
+                '2026-02-15',
+                '2026-02-01',
+                '2026-01-15T00:00:00+00:00',
+                '2026-01-01T00:00:00+00:00',
             ])->and($events->pluck('kind')->all())->toBe([
                 'Security', 'Decision', 'Prototype', 'Vetting', 'Note', 'Project',
             ]);

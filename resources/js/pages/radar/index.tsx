@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/native-select';
+import { formatDate } from '@/lib/dates';
 import { index, show } from '@/routes/radar';
 import { index as feedsIndex } from '@/routes/radar/feeds';
 import type { Paginated, SelectOption } from '@/types';
@@ -193,9 +194,7 @@ export default function RadarIndex({
                                         {item.published_at && (
                                             <span>
                                                 ·{' '}
-                                                {new Date(
-                                                    item.published_at,
-                                                ).toLocaleDateString()}
+                                                {formatDate(item.published_at)}
                                             </span>
                                         )}
                                         <a

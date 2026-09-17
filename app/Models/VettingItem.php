@@ -67,8 +67,8 @@ class VettingItem extends Model implements Linkable
             'external_url' => 'encrypted',
             'source_type' => VettingSourceType::class,
             'status' => VettingStatus::class,
-            'date_raised' => 'date',
-            'date_resolved' => 'date',
+            'date_raised' => 'date:Y-m-d',
+            'date_resolved' => 'date:Y-m-d',
         ];
     }
 

@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { formatDate } from '@/lib/dates';
 import { index, show } from '@/routes/projects';
 import type { Project } from './types';
 
@@ -23,7 +24,7 @@ function groupByMonth(events: TimelineEvent[]) {
     const months: { month: string; events: TimelineEvent[] }[] = [];
 
     for (const event of events) {
-        const month = new Date(event.date).toLocaleDateString(undefined, {
+        const month = formatDate(event.date, {
             month: 'long',
             year: 'numeric',
         });
@@ -87,9 +88,7 @@ export default function ProjectTimeline({
 
                                             <div className="flex flex-wrap items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground tabular-nums">
-                                                    {new Date(
-                                                        event.date,
-                                                    ).toLocaleDateString()}
+                                                    {formatDate(event.date)}
                                                 </span>
                                                 <Badge variant="secondary">
                                                     {event.kind}

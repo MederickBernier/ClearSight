@@ -75,8 +75,8 @@ class Prototype extends Model implements Linkable
             'status' => PrototypeStatus::class,
             'confidence_level' => ConfidenceLevel::class,
             'is_reusable' => 'boolean',
-            'date_started' => 'date',
-            'date_completed' => 'date',
+            'date_started' => 'date:Y-m-d',
+            'date_completed' => 'date:Y-m-d',
         ];
     }
 

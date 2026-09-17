@@ -3,6 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import Heading from '@/components/heading';
 import ItemLinks from '@/components/item-links';
 import { MarkdownSection } from '@/components/markdown';
+import { formatDate } from '@/lib/dates';
 import { index } from '@/routes/radar';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import PromoteButton from './promote-button';
@@ -36,23 +37,19 @@ export default function ShowRadarItem({
                         <dt className="text-muted-foreground">Published</dt>
                         <dd>
                             {item.published_at
-                                ? new Date(
-                                      item.published_at,
-                                  ).toLocaleDateString()
+                                ? formatDate(item.published_at)
                                 : '—'}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Fetched</dt>
-                        <dd>
-                            {new Date(item.fetched_at).toLocaleDateString()}
-                        </dd>
+                        <dd>{formatDate(item.fetched_at)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Triaged</dt>
                         <dd>
                             {item.triaged_at
-                                ? new Date(item.triaged_at).toLocaleDateString()
+                                ? formatDate(item.triaged_at)
                                 : 'Not yet'}
                         </dd>
                     </div>

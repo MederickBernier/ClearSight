@@ -6,6 +6,7 @@ import { MarkdownSection } from '@/components/markdown';
 import MarkdownExport from '@/components/markdown-export';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { destroy, edit, exportMethod, index } from '@/routes/vetting';
 import type { ItemLinkProps } from '@/types';
 import type { VettingItem } from './types';
@@ -71,17 +72,13 @@ export default function ShowVettingItem({
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Raised</dt>
-                        <dd>
-                            {new Date(item.date_raised).toLocaleDateString()}
-                        </dd>
+                        <dd>{formatDate(item.date_raised)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Resolved</dt>
                         <dd>
                             {item.date_resolved
-                                ? new Date(
-                                      item.date_resolved,
-                                  ).toLocaleDateString()
+                                ? formatDate(item.date_resolved)
                                 : 'Still open'}
                         </dd>
                     </div>

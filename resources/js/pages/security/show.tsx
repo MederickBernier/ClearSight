@@ -9,6 +9,7 @@ import type { TechnologyStackProps } from '@/components/technology-stack';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { destroy, edit, exportMethod, index } from '@/routes/security-notes';
 import type { ItemLinkProps } from '@/types';
 import type { SecurityNote } from './types';
@@ -91,17 +92,13 @@ export default function ShowSecurityNote({
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Flagged</dt>
-                        <dd>
-                            {new Date(note.date_flagged).toLocaleDateString()}
-                        </dd>
+                        <dd>{formatDate(note.date_flagged)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Resolved</dt>
                         <dd>
                             {note.date_resolved
-                                ? new Date(
-                                      note.date_resolved,
-                                  ).toLocaleDateString()
+                                ? formatDate(note.date_resolved)
                                 : 'Open'}
                         </dd>
                     </div>

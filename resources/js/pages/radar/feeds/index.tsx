@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDateTime } from '@/lib/dates';
 import { index as radarIndex } from '@/routes/radar';
 import {
     destroy,
@@ -189,7 +190,7 @@ export default function FeedsIndex({
 
                                         <p className="text-sm text-muted-foreground">
                                             {feed.last_fetched_at
-                                                ? `Last fetched ${new Date(feed.last_fetched_at).toLocaleString()}`
+                                                ? `Last fetched ${formatDateTime(feed.last_fetched_at)}`
                                                 : 'Never fetched'}
                                         </p>
 

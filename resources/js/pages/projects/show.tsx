@@ -9,6 +9,7 @@ import type { TechnologyStackProps } from '@/components/technology-stack';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { show as decisionShow } from '@/routes/decisions';
 import {
     destroy,
@@ -175,9 +176,7 @@ export default function ShowProject({
                             badge={item.status}
                             meta={
                                 item.date_raised
-                                    ? new Date(
-                                          item.date_raised,
-                                      ).toLocaleDateString()
+                                    ? formatDate(item.date_raised)
                                     : null
                             }
                         />
@@ -193,9 +192,7 @@ export default function ShowProject({
                             badge={item.status}
                             meta={
                                 item.date_started
-                                    ? new Date(
-                                          item.date_started,
-                                      ).toLocaleDateString()
+                                    ? formatDate(item.date_started)
                                     : null
                             }
                         />
@@ -214,9 +211,7 @@ export default function ShowProject({
                             badge={item.severity ?? item.status}
                             meta={
                                 item.date_flagged
-                                    ? new Date(
-                                          item.date_flagged,
-                                      ).toLocaleDateString()
+                                    ? formatDate(item.date_flagged)
                                     : null
                             }
                         />

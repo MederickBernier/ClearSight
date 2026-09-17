@@ -83,7 +83,7 @@ class DecisionRecord extends Model implements Linkable
             'consequences' => 'encrypted',
             'conditions_for_revisiting' => 'encrypted',
             'status' => DecisionStatus::class,
-            'next_review_at' => 'immutable_date',
+            'next_review_at' => 'immutable_date:Y-m-d',
         ];
     }
 

@@ -205,7 +205,8 @@ test('the activity feed reads across modules, newest first', function () {
 
             expect($activity->pluck('kind')->all())->toBe(['Vetting', 'Decision'])
                 ->and($activity->first()['label'])->toBe('Newer proposal')
-                ->and($activity->first()['state'])->not->toBeNull();
+                ->and($activity->first()['state'])->not->toBeNull()
+                ->and($activity->last()['at'])->toBe($decision->updated_at->toIso8601String());
         });
 });
 

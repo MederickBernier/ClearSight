@@ -5,6 +5,7 @@ import ProjectFilter from '@/components/project-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { create, index, show } from '@/routes/vetting';
 import type { SelectOption } from '@/types';
 import type { VettingItemSummary } from './types';
@@ -109,15 +110,11 @@ export default function VettingIndex({
                                             </Badge>
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
-                                            {new Date(
-                                                item.date_raised,
-                                            ).toLocaleDateString()}
+                                            {formatDate(item.date_raised)}
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                             {item.date_resolved
-                                                ? new Date(
-                                                      item.date_resolved,
-                                                  ).toLocaleDateString()
+                                                ? formatDate(item.date_resolved)
                                                 : '—'}
                                         </td>
                                     </tr>

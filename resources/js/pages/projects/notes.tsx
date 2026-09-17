@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDateTime } from '@/lib/dates';
 import { destroy, store, update } from '@/routes/projects/notes';
 import type { ProjectNote } from './types';
 
@@ -123,9 +124,7 @@ export default function ProjectNotes({
                                         {note.title}
                                     </h3>
                                     <p className="text-xs text-muted-foreground">
-                                        {new Date(
-                                            note.updated_at,
-                                        ).toLocaleString()}
+                                        {formatDateTime(note.updated_at)}
                                     </p>
                                 </div>
 

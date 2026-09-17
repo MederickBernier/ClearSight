@@ -46,6 +46,8 @@ test('the index lists items newest raised first', function () {
             ->component('vetting/index')
             ->has('items', 2)
             ->where('items.0.title', 'Newer')
+            // A bare day, not UTC midnight, or browsers west of UTC show the day before.
+            ->where('items.0.date_raised', '2026-06-01')
             ->where('items.1.title', 'Older')
             ->has('statuses', 5)
             ->has('sourceTypes', 4));

@@ -95,9 +95,9 @@ class SecurityNote extends Model implements Linkable
             'routed_to' => SecurityRoutedTo::class,
             'status' => SecurityNoteStatus::class,
             'is_issue' => 'boolean',
-            'deferred_until' => 'immutable_date',
-            'date_flagged' => 'date',
-            'date_resolved' => 'date',
+            'deferred_until' => 'immutable_date:Y-m-d',
+            'date_flagged' => 'date:Y-m-d',
+            'date_resolved' => 'date:Y-m-d',
         ];
     }
 

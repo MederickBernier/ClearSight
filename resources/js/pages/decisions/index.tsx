@@ -5,6 +5,7 @@ import ProjectFilter from '@/components/project-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { create, index, show } from '@/routes/decisions';
 import type { SelectOption } from '@/types';
 import type { DecisionRecordSummary } from './types';
@@ -107,9 +108,7 @@ export default function DecisionsIndex({
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                             {record.updated_at
-                                                ? new Date(
-                                                      record.updated_at,
-                                                  ).toLocaleDateString()
+                                                ? formatDate(record.updated_at)
                                                 : '—'}
                                         </td>
                                     </tr>

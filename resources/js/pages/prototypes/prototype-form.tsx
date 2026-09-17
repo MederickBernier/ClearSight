@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { localToday } from '@/lib/dates';
 import type { SelectOption } from '@/types';
 import type { Prototype } from './types';
 
@@ -44,9 +45,7 @@ function initialData(
         is_reusable: prototype?.is_reusable ?? false,
         reusability_note: prototype?.reusability_note ?? '',
         repo_reference: prototype?.repo_reference ?? '',
-        date_started:
-            prototype?.date_started?.slice(0, 10) ??
-            new Date().toISOString().slice(0, 10),
+        date_started: prototype?.date_started?.slice(0, 10) ?? localToday(),
     };
 }
 

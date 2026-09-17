@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { localToday } from '@/lib/dates';
 import type { SelectOption } from '@/types';
 import type { VettingItem } from './types';
 
@@ -34,9 +35,7 @@ function initialData(
         title: item?.title ?? '',
         source_type: item?.source_type ?? sourceTypes[0]?.value ?? '',
         source_detail: item?.source_detail ?? '',
-        date_raised:
-            item?.date_raised?.slice(0, 10) ??
-            new Date().toISOString().slice(0, 10),
+        date_raised: item?.date_raised?.slice(0, 10) ?? localToday(),
         proposal_description: item?.proposal_description ?? '',
         assessment: item?.assessment ?? '',
         status: item?.status ?? statuses[0]?.value ?? '',

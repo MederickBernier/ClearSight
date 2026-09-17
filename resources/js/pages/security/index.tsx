@@ -5,6 +5,7 @@ import ProjectFilter from '@/components/project-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { create, index, show } from '@/routes/security-notes';
 import type { SelectOption } from '@/types';
 import type { SecurityNoteSummary } from './types';
@@ -150,9 +151,7 @@ export default function SecurityIndex({
                                             </Badge>
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
-                                            {new Date(
-                                                note.date_flagged,
-                                            ).toLocaleDateString()}
+                                            {formatDate(note.date_flagged)}
                                         </td>
                                     </tr>
                                 ))}

@@ -51,7 +51,7 @@ class BuildProjectTimeline
     private function projectEvents(Project $project): array
     {
         $events = [[
-            'date' => $project->created_at?->toDateString() ?? '',
+            'date' => $project->created_at?->toIso8601String() ?? '',
             'kind' => 'Project',
             'event' => 'Project started',
             'label' => $project->name,
@@ -61,7 +61,7 @@ class BuildProjectTimeline
 
         if ($project->archived_at !== null) {
             $events[] = [
-                'date' => $project->archived_at->toDateString(),
+                'date' => $project->archived_at->toIso8601String(),
                 'kind' => 'Project',
                 'event' => 'Project archived',
                 'label' => $project->name,
@@ -82,7 +82,7 @@ class BuildProjectTimeline
             ->orderBy('created_at')
             ->get()
             ->map(fn (DecisionRecord $record): array => [
-                'date' => $record->created_at?->toDateString() ?? '',
+                'date' => $record->created_at?->toIso8601String() ?? '',
                 'kind' => 'Decision',
                 'event' => 'Decision recorded',
                 'label' => $record->document_id.' — '.$record->title,
@@ -202,7 +202,7 @@ class BuildProjectTimeline
             ->orderBy('created_at')
             ->get()
             ->map(fn (ProjectNote $note): array => [
-                'date' => $note->created_at?->toDateString() ?? '',
+                'date' => $note->created_at?->toIso8601String() ?? '',
                 'kind' => 'Note',
                 'event' => 'Note added',
                 'label' => $note->title,

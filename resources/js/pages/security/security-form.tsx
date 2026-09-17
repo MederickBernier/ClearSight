@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { localToday } from '@/lib/dates';
 import type { SelectOption } from '@/types';
 import type { SecurityNote } from './types';
 
@@ -54,9 +55,7 @@ function initialData(
         routed_to: note?.routed_to ?? routes[0]?.value ?? '',
         status: note?.status ?? statuses[0]?.value ?? '',
         deferral_reason: note?.deferral_reason ?? '',
-        date_flagged:
-            note?.date_flagged?.slice(0, 10) ??
-            new Date().toISOString().slice(0, 10),
+        date_flagged: note?.date_flagged?.slice(0, 10) ?? localToday(),
         external_url: note?.external_url ?? '',
     };
 }

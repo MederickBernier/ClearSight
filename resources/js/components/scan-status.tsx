@@ -2,6 +2,7 @@ import { Form } from '@inertiajs/react';
 import { RefreshCw, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDateTime } from '@/lib/dates';
 import { fetchAll } from '@/routes/radar/feeds';
 
 /**
@@ -27,7 +28,7 @@ export default function ScanStatus({
         <div className="flex flex-wrap items-center gap-3">
             <p className="text-sm text-muted-foreground">
                 {lastScanAt
-                    ? `Last scanned ${new Date(lastScanAt).toLocaleString()}`
+                    ? `Last scanned ${formatDateTime(lastScanAt)}`
                     : 'Never scanned'}
             </p>
 

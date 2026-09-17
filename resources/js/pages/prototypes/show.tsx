@@ -9,6 +9,7 @@ import type { TechnologyStackProps } from '@/components/technology-stack';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { destroy, edit, exportMethod, index } from '@/routes/prototypes';
 import type { ItemLinkProps } from '@/types';
 import type { Prototype } from './types';
@@ -80,19 +81,13 @@ export default function ShowPrototype({
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Started</dt>
-                        <dd>
-                            {new Date(
-                                prototype.date_started,
-                            ).toLocaleDateString()}
-                        </dd>
+                        <dd>{formatDate(prototype.date_started)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Finished</dt>
                         <dd>
                             {prototype.date_completed
-                                ? new Date(
-                                      prototype.date_completed,
-                                  ).toLocaleDateString()
+                                ? formatDate(prototype.date_completed)
                                 : 'Still running'}
                         </dd>
                     </div>

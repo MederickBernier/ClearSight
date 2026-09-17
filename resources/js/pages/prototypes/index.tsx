@@ -5,6 +5,7 @@ import ProjectFilter from '@/components/project-filter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { formatDate } from '@/lib/dates';
 import { create, index, show } from '@/routes/prototypes';
 import type { SelectOption } from '@/types';
 import type { PrototypeSummary } from './types';
@@ -123,15 +124,13 @@ export default function PrototypesIndex({
                                                   : 'No'}
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
-                                            {new Date(
-                                                prototype.date_started,
-                                            ).toLocaleDateString()}
+                                            {formatDate(prototype.date_started)}
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                             {prototype.date_completed
-                                                ? new Date(
+                                                ? formatDate(
                                                       prototype.date_completed,
-                                                  ).toLocaleDateString()
+                                                  )
                                                 : '—'}
                                         </td>
                                     </tr>

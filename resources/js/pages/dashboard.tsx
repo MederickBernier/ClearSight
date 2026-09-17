@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ArrowRight, Check } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { parseDate } from '@/lib/dates';
 import { dashboard } from '@/routes';
 
 type Attention = {
@@ -68,7 +69,7 @@ function Section({
 }
 
 function relativeDay(value: string) {
-    const then = new Date(value);
+    const then = parseDate(value);
     const days = Math.round((Date.now() - then.getTime()) / 86_400_000);
 
     if (days <= 0) {

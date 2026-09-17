@@ -64,7 +64,7 @@ class BuildActivityFeed
                 'label' => $record->document_id.' — '.$record->title,
                 'url' => route('decisions.show', $record),
                 'state' => $record->status->label(),
-                'at' => (string) $record->updated_at,
+                'at' => $record->updated_at?->toIso8601String() ?? '',
             ])
             ->all());
     }
@@ -83,7 +83,7 @@ class BuildActivityFeed
                 'label' => $item->title,
                 'url' => route('vetting.show', $item),
                 'state' => $item->status->label(),
-                'at' => (string) $item->updated_at,
+                'at' => $item->updated_at?->toIso8601String() ?? '',
             ])
             ->all());
     }
@@ -102,7 +102,7 @@ class BuildActivityFeed
                 'label' => $prototype->title,
                 'url' => route('prototypes.show', $prototype),
                 'state' => $prototype->status->label(),
-                'at' => (string) $prototype->updated_at,
+                'at' => $prototype->updated_at?->toIso8601String() ?? '',
             ])
             ->all());
     }
@@ -121,7 +121,7 @@ class BuildActivityFeed
                 'label' => $note->title,
                 'url' => route('security-notes.show', $note),
                 'state' => $note->severity->label().', '.$note->status->label(),
-                'at' => (string) $note->updated_at,
+                'at' => $note->updated_at?->toIso8601String() ?? '',
             ])
             ->all());
     }
@@ -140,7 +140,7 @@ class BuildActivityFeed
                 'label' => $note->title,
                 'url' => route('projects.show', $note->project_id),
                 'state' => null,
-                'at' => (string) $note->updated_at,
+                'at' => $note->updated_at?->toIso8601String() ?? '',
             ])
             ->all());
     }
