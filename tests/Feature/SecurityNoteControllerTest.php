@@ -138,6 +138,8 @@ test('a deferred finding stays open', function () {
 test('it rejects a malformed external url', function () {
     $this->post(route('security-notes.store'), securityNotePayload(['external_url' => 'not a url']))
         ->assertSessionHasErrors('external_url');
+    $this->post(route('security-notes.store'), securityNotePayload(['external_url' => 'file:///etc/passwd']))
+        ->assertSessionHasErrors('external_url');
 });
 
 test('it deletes a note', function () {

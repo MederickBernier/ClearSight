@@ -163,3 +163,26 @@ test('a read-only account can search', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page->where('total', 1));
 });
+
+test('a single character is too short to search on', function () {
+    DecisionRecord::factory()->create(['title' => 'A decision about anything']);
+
+    $this->get(route('search', ['q' => 'a']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('total', 0));
+});
+
+test('like wildcards in a term are matched literally', function () {
+    RadarItem::factory()->create(['title' => 'Nothing special here']);
+    RadarItem::factory()->create(['title' => 'Cut costs by 100% overnight']);
+
+    $this->get(route('search', ['q' => '0%']))
+        ->assertOk()
+        ->assertInertia(function (AssertableInertia $page) {
+            expect(groupsFor($page)['Tech radar']['total'])->toBe(1);
+        });
+
+    $this->get(route('search', ['q' => '__']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('total', 0));
+});

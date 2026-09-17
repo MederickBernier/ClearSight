@@ -19,6 +19,7 @@ use App\Models\Technology;
 use App\Models\VettingItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -90,6 +91,10 @@ class ExportController extends Controller
      */
     private function respond(Request $request, string $markdown, string $basename, string $title): Response
     {
+        // Basenames come from typed-in names and ids, so anything that could
+        // break the header or come out empty is reduced to a plain filename.
+        $basename = trim((string) preg_replace('/[^A-Za-z0-9._-]+/', '-', Str::ascii($basename)), '-.') ?: 'export';
+
         if ($request->query('format') === 'pdf') {
             return app(RenderMarkdownPdf::class)($markdown, $title)
                 ->download($basename.'.pdf');

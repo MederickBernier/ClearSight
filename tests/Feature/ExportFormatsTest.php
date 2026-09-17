@@ -217,3 +217,14 @@ test('no heading goes deeper than markdown allows', function () {
     expect($matches[1])->not->toBeEmpty()
         ->and(max(array_map('strlen', $matches[1])))->toBeLessThanOrEqual(6);
 });
+
+test('an export filename never breaks the header or comes out empty', function () {
+    $unnamed = Technology::factory()->create(['name' => '日本']);
+    $quoted = DecisionRecord::factory()->create(['project_id' => null, 'project_prefix' => 'A"B', 'category' => 'X;Y', 'sequence' => 1]);
+
+    $this->get(route('technologies.export', $unnamed))
+        ->assertHeader('content-disposition', 'attachment; filename="export.md"');
+
+    $this->get(route('decisions.export', $quoted))
+        ->assertHeader('content-disposition', 'attachment; filename="A-B-X-Y-001.md"');
+});

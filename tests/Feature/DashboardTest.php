@@ -200,7 +200,7 @@ test('the activity feed reads across modules, newest first', function () {
 
     $this->get(route('dashboard'))
         ->assertOk()
-        ->assertInertia(function (AssertableInertia $page) {
+        ->assertInertia(function (AssertableInertia $page) use ($decision) {
             $activity = collect($page->toArray()['props']['activity']);
 
             expect($activity->pluck('kind')->all())->toBe(['Vetting', 'Decision'])

@@ -120,3 +120,13 @@ test('a read-only account cannot start a scan', function () {
 
     expect(RadarItem::count())->toBe(0);
 });
+
+test('scanning is rate limited', function () {
+    Http::fake();
+
+    foreach (range(1, 6) as $attempt) {
+        $this->post(route('radar.feeds.fetch-all'))->assertRedirect();
+    }
+
+    $this->post(route('radar.feeds.fetch-all'))->assertTooManyRequests();
+});

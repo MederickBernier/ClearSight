@@ -27,7 +27,7 @@ trait VettingItemValidationRules
                 'required_if:status,'.VettingStatus::Rejected->value,
                 'string',
             ],
-            'external_url' => ['nullable', 'url', 'max:255'],
+            'external_url' => ['nullable', 'url:http,https', 'max:255'],
         ];
     }
 

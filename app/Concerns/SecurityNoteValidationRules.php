@@ -45,7 +45,7 @@ trait SecurityNoteValidationRules
                 'date',
             ],
             'date_flagged' => ['required', 'date'],
-            'external_url' => ['nullable', 'url', 'max:255'],
+            'external_url' => ['nullable', 'url:http,https', 'max:255'],
         ];
     }
 

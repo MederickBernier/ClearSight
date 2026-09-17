@@ -38,7 +38,9 @@ class SearchEverything
     {
         $term = trim($term);
 
-        if ($term === '') {
+        // One character matches nearly everything and, for encrypted modules,
+        // still decrypts every row to find out.
+        if (mb_strlen($term) < 2) {
             return [];
         }
 
@@ -207,14 +209,14 @@ class SearchEverything
         return $class::query()
             ->where(function (Builder $match) use ($columns, $relations, $term): void {
                 foreach ($columns as $column) {
-                    $match->orWhere($column, 'ilike', '%'.$term.'%');
+                    $match->orWhere($column, 'ilike', '%'.addcslashes($term, '%_\\').'%');
                 }
 
                 foreach ($relations as $relation => $relationColumns) {
                     $match->orWhereHas($relation, function (Builder $related) use ($relationColumns, $term): void {
                         $related->where(function (Builder $inner) use ($relationColumns, $term): void {
                             foreach ($relationColumns as $column) {
-                                $inner->orWhere($column, 'ilike', '%'.$term.'%');
+                                $inner->orWhere($column, 'ilike', '%'.addcslashes($term, '%_\\').'%');
                             }
                         });
                     });

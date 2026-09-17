@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\FetchFeedSource;
+use App\Actions\ResolvePublicAddress;
 use App\Enums\TriageStatus;
 use App\Models\FeedSource;
 use App\Models\RadarItem;
@@ -194,4 +195,89 @@ test('the seed command leaves a source you already changed alone', function () {
 
     expect($source->refresh()->name)->toBe('Renamed')
         ->and($source->is_active)->toBeFalse();
+});
+
+test('it refuses to fetch a feed on an internal address', function (string $url) {
+    Http::fake();
+
+    $source = FeedSource::factory()->create(['url' => $url]);
+
+    expect(app(FetchFeedSource::class)($source))->toBe(0)
+        ->and($source->refresh()->last_error)->toBe('The feed address is not a public web address.');
+
+    Http::assertNothingSent();
+})->with([
+    'loopback' => 'http://127.0.0.1/feed.xml',
+    'cloud metadata' => 'http://169.254.169.254/latest/meta-data',
+    'private network' => 'http://10.0.0.5/feed.xml',
+    'carrier-grade nat' => 'http://100.64.0.1/feed.xml',
+    'ipv6 loopback' => 'http://[::1]/feed.xml',
+]);
+
+test('it refuses a hostname that resolves to an internal address', function () {
+    app()->instance(ResolvePublicAddress::class, new class extends ResolvePublicAddress
+    {
+        protected function lookup(string $host): array
+        {
+            return ['192.168.1.10'];
+        }
+    });
+    Http::fake();
+
+    $source = FeedSource::factory()->create(['url' => 'https://intranet.example.test/feed.xml']);
+
+    app(FetchFeedSource::class)($source);
+
+    expect($source->refresh()->last_error)->toBe('The feed address is not a public web address.');
+    Http::assertNothingSent();
+});
+
+test('it checks every redirect hop, not only the first url', function () {
+    Http::fake([
+        'example.test/*' => Http::response('', 302, ['Location' => 'http://127.0.0.1/admin']),
+    ]);
+
+    $source = FeedSource::factory()->create(['url' => 'https://example.test/feed.xml']);
+
+    expect(app(FetchFeedSource::class)($source))->toBe(0)
+        ->and($source->refresh()->last_error)->toBe('The feed address is not a public web address.');
+
+    Http::assertSentCount(1);
+});
+
+test('it follows a redirect to another public address', function () {
+    Http::fake([
+        'old.test/*' => Http::response('', 301, ['Location' => 'https://new.test/feed.xml']),
+        'new.test/*' => Http::response(rssFeed()),
+    ]);
+
+    $source = FeedSource::factory()->create(['url' => 'https://old.test/feed.xml']);
+
+    expect(app(FetchFeedSource::class)($source))->toBe(2)
+        ->and($source->refresh()->last_error)->toBeNull();
+});
+
+test('a failed fetch keeps a fixed message rather than what the server answered', function () {
+    Http::fake(['*' => Http::response('<h1>Secret internal page</h1>', 500)]);
+
+    $source = FeedSource::factory()->create();
+
+    app(FetchFeedSource::class)($source);
+
+    expect($source->refresh()->last_error)->toBe('The feed answered HTTP 500.');
+});
+
+test('it drops entries whose link is not a web address', function () {
+    Http::fake(['*' => Http::response(<<<'XML'
+<?xml version="1.0"?>
+<rss version="2.0"><channel>
+  <item><title>Harmless</title><link>https://example.test/ok</link></item>
+  <item><title>Script</title><link>javascript:alert(1)</link></item>
+  <item><title>File</title><link>file:///etc/passwd</link></item>
+</channel></rss>
+XML)]);
+
+    app(FetchFeedSource::class)(FeedSource::factory()->create());
+
+    expect(RadarItem::pluck('url')->all())->toBe(['https://example.test/ok']);
 });

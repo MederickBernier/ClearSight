@@ -156,6 +156,17 @@ test('a feed url must be http or https', function () {
     expect(FeedSource::count())->toBe(0);
 });
 
+test('a feed url cannot point at an internal address', function () {
+    $this->post(route('radar.feeds.store'), [
+        'name' => 'Metadata',
+        'url' => 'http://169.254.169.254/latest/meta-data',
+        'feed_type' => 'rss',
+        'is_active' => true,
+    ])->assertSessionHasErrors('url');
+
+    expect(FeedSource::count())->toBe(0);
+});
+
 test('a feed url cannot be added twice', function () {
     FeedSource::factory()->create(['url' => 'https://example.test/feed.xml']);
 

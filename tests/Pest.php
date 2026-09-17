@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\ResolvePublicAddress;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,6 +17,17 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        // Feed hosts in tests are made up and never resolve. Every one is
+        // treated as a public address unless a test says otherwise.
+        app()->instance(ResolvePublicAddress::class, new class extends ResolvePublicAddress
+        {
+            protected function lookup(string $host): array
+            {
+                return ['93.184.215.14'];
+            }
+        });
+    })
     ->in('Feature');
 
 /*

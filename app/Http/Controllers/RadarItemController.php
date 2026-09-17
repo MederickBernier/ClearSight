@@ -52,8 +52,8 @@ class RadarItemController extends Controller
                     // ponytail: unindexed ILIKE scan. Fine for one person's
                     // reading list; add a tsvector index if it ever drags.
                     fn ($match) => $match
-                        ->where('title', 'ilike', '%'.$search.'%')
-                        ->orWhere('summary', 'ilike', '%'.$search.'%'),
+                        ->where('title', 'ilike', '%'.addcslashes($search, '%_\\').'%')
+                        ->orWhere('summary', 'ilike', '%'.addcslashes($search, '%_\\').'%'),
                 ))
                 ->orderByDesc('published_at')
                 ->orderByDesc('id')

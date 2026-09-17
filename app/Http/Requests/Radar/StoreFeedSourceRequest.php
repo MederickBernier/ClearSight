@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Radar;
 
+use App\Actions\ResolvePublicAddress;
 use App\Enums\FeedType;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,6 +36,11 @@ class StoreFeedSourceRequest extends FormRequest
                 'required',
                 'url:http,https',
                 'max:255',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (is_string($value) && app(ResolvePublicAddress::class)($value) === null) {
+                        $fail(__('Use a public web address; private and internal addresses cannot be fetched.'));
+                    }
+                },
                 Rule::unique('feed_sources', 'url')->ignore($this->route('feedSource')),
             ],
             'feed_type' => ['required', new Enum(FeedType::class)],

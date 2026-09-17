@@ -28,16 +28,22 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified', 'can-write'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-    Route::get('search', SearchController::class)->name('search');
+    Route::get('search', SearchController::class)->middleware('throttle:60,1,search')->name('search');
 
-    Route::get('export', [ExportController::class, 'everything'])->name('export.everything');
+    Route::get('export', [ExportController::class, 'everything'])
+        ->middleware('throttle:20,1,exports')
+        ->name('export.everything');
     Route::get('vetting/{vettingItem}/export', [ExportController::class, 'vettingItem'])
+        ->middleware('throttle:20,1,exports')
         ->name('vetting.export');
     Route::get('prototypes/{prototype}/export', [ExportController::class, 'prototype'])
+        ->middleware('throttle:20,1,exports')
         ->name('prototypes.export');
     Route::get('security-notes/{securityNote}/export', [ExportController::class, 'securityNote'])
+        ->middleware('throttle:20,1,exports')
         ->name('security-notes.export');
     Route::get('technologies/{technology}/export', [ExportController::class, 'technology'])
+        ->middleware('throttle:20,1,exports')
         ->name('technologies.export');
 
     // The recap sits above the resource so its path is not read as an id.
@@ -59,6 +65,7 @@ Route::middleware(['auth', 'verified', 'can-write'])->group(function () {
         ->name('projects.timeline');
 
     Route::get('projects/{project}/export', [ExportController::class, 'project'])
+        ->middleware('throttle:20,1,exports')
         ->name('projects.export');
 
     Route::patch('projects/{project}/archive', [ProjectController::class, 'archive'])
@@ -78,6 +85,7 @@ Route::middleware(['auth', 'verified', 'can-write'])->group(function () {
         ->name('decisions.supersede');
 
     Route::get('decisions/{decisionRecord}/export', [ExportController::class, 'decision'])
+        ->middleware('throttle:20,1,exports')
         ->name('decisions.export');
 
     Route::post('decisions/{decisionRecord}/links', [DecisionLinkController::class, 'store'])
@@ -106,8 +114,10 @@ Route::middleware(['auth', 'verified', 'can-write'])->group(function () {
     Route::delete('radar-feeds/{feedSource}', [FeedSourceController::class, 'destroy'])
         ->name('radar.feeds.destroy');
     Route::post('radar-feeds/fetch', [FeedSourceController::class, 'fetchAll'])
+        ->middleware('throttle:6,1,feed-fetch')
         ->name('radar.feeds.fetch-all');
     Route::post('radar-feeds/{feedSource}/fetch', [FeedSourceController::class, 'fetch'])
+        ->middleware('throttle:6,1,feed-fetch')
         ->name('radar.feeds.fetch');
 
     Route::post('item-links', [ItemLinkController::class, 'store'])->name('item-links.store');
@@ -126,7 +136,7 @@ require __DIR__.'/settings.php';
 // guard for the same reason the saved searches do.
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('markdown/preview', MarkdownPreviewController::class)
-        ->middleware('throttle:120,1')
+        ->middleware('throttle:120,1,markdown-preview')
         ->name('markdown.preview');
 });
 
