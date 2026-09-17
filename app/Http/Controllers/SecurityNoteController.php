@@ -75,6 +75,10 @@ class SecurityNoteController extends Controller
     {
         return Inertia::render('security/show', [
             'note' => $securityNote,
+            'sources' => SecurityNoteSource::options(),
+            'severities' => SecuritySeverity::options(),
+            'routes' => SecurityRoutedTo::options(),
+            'statuses' => SecurityNoteStatus::options(),
             'markdown' => app(RenderSecurityNoteMarkdown::class)($securityNote),
             ...$this->technologyStackProps($securityNote),
             ...$this->itemLinkProps($securityNote),

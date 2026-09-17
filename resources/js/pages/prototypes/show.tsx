@@ -10,14 +10,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
+import { labelFor } from '@/lib/utils';
 import { destroy, edit, exportMethod, index } from '@/routes/prototypes';
-import type { ItemLinkProps } from '@/types';
+import type { ItemLinkProps, SelectOption } from '@/types';
 import type { Prototype } from './types';
 
 type ShowProps = ItemLinkProps &
     TechnologyStackProps & {
         markdown: string;
         prototype: Prototype;
+        statuses: SelectOption[];
+        confidenceLevels: SelectOption[];
         html: {
             hypothesis: string | null;
             test_approach: string | null;
@@ -29,6 +32,8 @@ type ShowProps = ItemLinkProps &
 
 export default function ShowPrototype({
     prototype,
+    statuses,
+    confidenceLevels,
     html,
     stack,
     technologyOptions,
@@ -73,11 +78,16 @@ export default function ShowPrototype({
                 <dl className="grid gap-3 text-sm sm:grid-cols-4">
                     <div>
                         <dt className="text-muted-foreground">Status</dt>
-                        <dd>{prototype.status}</dd>
+                        <dd>{labelFor(statuses, prototype.status)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Confidence</dt>
-                        <dd>{prototype.confidence_level ?? '—'}</dd>
+                        <dd>
+                            {labelFor(
+                                confidenceLevels,
+                                prototype.confidence_level,
+                            )}
+                        </dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Started</dt>

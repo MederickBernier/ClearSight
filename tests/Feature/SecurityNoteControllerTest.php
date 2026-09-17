@@ -176,3 +176,16 @@ test('a finding that stops being deferred, or turns out to be an issue, drops th
         ->and($deferred->deferred_until)->toBeNull()
         ->and($nonIssue->refresh()->non_issue_reason)->toBeNull();
 });
+
+test('the show page carries the labels its enum values are shown with', function () {
+    $note = SecurityNote::factory()->deferred()->create(['deferred_until' => now()->addMonth()]);
+
+    $this->get(route('security-notes.show', $note))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('statuses', count(SecurityNoteStatus::cases()))
+            ->has('severities')
+            ->has('sources')
+            ->has('routes')
+            ->where('note.deferred_until', $note->deferred_until->toDateString()));
+});

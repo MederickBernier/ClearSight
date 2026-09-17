@@ -6,6 +6,11 @@ use App\Actions\BuildProjectTimeline;
 use App\Actions\RenderProjectMarkdown;
 use App\Concerns\PresentsTechnologyStack;
 use App\Concerns\RendersMarkdown;
+use App\Enums\DecisionStatus;
+use App\Enums\PrototypeStatus;
+use App\Enums\SecurityNoteStatus;
+use App\Enums\SecuritySeverity;
+use App\Enums\VettingStatus;
 use App\Http\Requests\Projects\StoreProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
@@ -69,6 +74,14 @@ class ProjectController extends Controller
         return Inertia::render('projects/show', [
             'project' => $project,
             'markdown' => app(RenderProjectMarkdown::class)($project),
+            // Rows below carry raw enum values; these turn them into words.
+            'labels' => [
+                'decisionStatuses' => DecisionStatus::options(),
+                'vettingStatuses' => VettingStatus::options(),
+                'prototypeStatuses' => PrototypeStatus::options(),
+                'securityStatuses' => SecurityNoteStatus::options(),
+                'severities' => SecuritySeverity::options(),
+            ],
             ...$this->technologyStackProps($project),
             'html' => ['description' => $this->renderMarkdown($project->description)],
             'decisions' => $project->decisionRecords()

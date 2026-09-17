@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
+import { labelFor } from '@/lib/utils';
 import { show as decisionShow } from '@/routes/decisions';
 import {
     destroy,
@@ -21,6 +22,7 @@ import {
 import { show as prototypeShow } from '@/routes/prototypes';
 import { show as securityShow } from '@/routes/security-notes';
 import { show as vettingShow } from '@/routes/vetting';
+import type { SelectOption } from '@/types';
 import ProjectNotes from './notes';
 import type {
     Project,
@@ -38,6 +40,14 @@ type ShowProps = TechnologyStackProps & {
     prototypes: ProjectRow[];
     securityNotes: ProjectRow[];
     notes: ProjectNote[];
+    labels: Record<
+        | 'decisionStatuses'
+        | 'vettingStatuses'
+        | 'prototypeStatuses'
+        | 'securityStatuses'
+        | 'severities',
+        SelectOption[]
+    >;
 };
 
 function Group({
@@ -98,6 +108,7 @@ export default function ShowProject({
     prototypes,
     securityNotes,
     notes,
+    labels,
     stack,
     technologyOptions,
     stackTarget,
@@ -162,7 +173,10 @@ export default function ShowProject({
                                     {decision.title}
                                 </>
                             }
-                            badge={decision.status}
+                            badge={labelFor(
+                                labels.decisionStatuses,
+                                decision.status,
+                            )}
                         />
                     ))}
                 </Group>
@@ -173,7 +187,10 @@ export default function ShowProject({
                             key={item.id}
                             href={vettingShow(item.id).url}
                             label={item.title}
-                            badge={item.status}
+                            badge={labelFor(
+                                labels.vettingStatuses,
+                                item.status,
+                            )}
                             meta={
                                 item.date_raised
                                     ? formatDate(item.date_raised)
@@ -189,7 +206,10 @@ export default function ShowProject({
                             key={item.id}
                             href={prototypeShow(item.id).url}
                             label={item.title}
-                            badge={item.status}
+                            badge={labelFor(
+                                labels.prototypeStatuses,
+                                item.status,
+                            )}
                             meta={
                                 item.date_started
                                     ? formatDate(item.date_started)
@@ -208,7 +228,8 @@ export default function ShowProject({
                             key={item.id}
                             href={securityShow(item.id).url}
                             label={item.title}
-                            badge={item.severity ?? item.status}
+                            // Both, or a fixed high-severity finding reads as an open one.
+                            badge={`${labelFor(labels.severities, item.severity)} · ${labelFor(labels.securityStatuses, item.status)}`}
                             meta={
                                 item.date_flagged
                                     ? formatDate(item.date_flagged)

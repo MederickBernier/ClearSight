@@ -1,6 +1,6 @@
 import { useHttp } from '@inertiajs/react';
 import { Eye, Pencil } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import InputError from '@/components/input-error';
 import { Markdown } from '@/components/markdown';
 import { Button } from '@/components/ui/button';
@@ -43,16 +43,17 @@ export default function MarkdownField({
     const http = useHttp<{ text: string }, { html: string | null }>(preview(), {
         text: '',
     });
-    // Uncontrolled use still needs the text in hand to preview it, so the
-    // component keeps its own copy when the parent is not holding one.
-    const [ownValue, setOwnValue] = useState('');
-    const text = value ?? ownValue;
+    // Uncontrolled use (a plain <Form> field) leaves the text in the DOM, so a
+    // form reset clears it and the preview reads it from there.
+    const textarea = useRef<HTMLTextAreaElement>(null);
     const [showing, setShowing] = useState<'write' | 'preview'>('write');
     const [html, setHtml] = useState<string | null>(null);
     const [previewed, setPreviewed] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     const showPreview = async () => {
+        const text = value ?? textarea.current?.value ?? '';
+
         setShowing('preview');
 
         if (previewed === text) {
@@ -90,6 +91,7 @@ export default function MarkdownField({
                         type="button"
                         size="sm"
                         variant={showing === 'write' ? 'secondary' : 'ghost'}
+                        aria-pressed={showing === 'write'}
                         onClick={() => setShowing('write')}
                     >
                         <Pencil /> Write
@@ -98,6 +100,7 @@ export default function MarkdownField({
                         type="button"
                         size="sm"
                         variant={showing === 'preview' ? 'secondary' : 'ghost'}
+                        aria-pressed={showing === 'preview'}
                         onClick={showPreview}
                     >
                         <Eye /> Preview
@@ -105,23 +108,27 @@ export default function MarkdownField({
                 </div>
             </div>
 
-            {showing === 'write' ? (
-                <Textarea
-                    id={id}
-                    name={name}
-                    value={text}
-                    onChange={(event) => {
-                        setOwnValue(event.target.value);
-                        onChange?.(event.target.value);
-                    }}
-                    rows={rows}
-                    required={required}
-                    placeholder={placeholder}
-                />
-            ) : (
+            {/* The textarea stays mounted while previewing: unmounted, a plain
+                <Form> would submit without it. */}
+            <Textarea
+                ref={textarea}
+                id={id}
+                name={name}
+                value={value}
+                onChange={(event) => onChange?.(event.target.value)}
+                rows={rows}
+                // A hidden required field would block submit with no visible
+                // message; the server still checks it.
+                required={required && showing === 'write'}
+                placeholder={placeholder}
+                hidden={showing === 'preview'}
+            />
+
+            {showing === 'preview' && (
                 <div
                     className="min-h-24 rounded-md border border-input bg-card px-3 py-2"
                     style={{ minHeight: `${rows * 1.6}rem` }}
+                    aria-live="polite"
                 >
                     {loading ? (
                         <p className="text-sm text-muted-foreground">

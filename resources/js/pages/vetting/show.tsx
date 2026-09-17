@@ -7,13 +7,16 @@ import MarkdownExport from '@/components/markdown-export';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
+import { labelFor } from '@/lib/utils';
 import { destroy, edit, exportMethod, index } from '@/routes/vetting';
-import type { ItemLinkProps } from '@/types';
+import type { ItemLinkProps, SelectOption } from '@/types';
 import type { VettingItem } from './types';
 
 type ShowProps = ItemLinkProps & {
     markdown: string;
     item: VettingItem;
+    statuses: SelectOption[];
+    sourceTypes: SelectOption[];
     html: {
         proposal_description: string | null;
         assessment: string | null;
@@ -23,6 +26,8 @@ type ShowProps = ItemLinkProps & {
 
 export default function ShowVettingItem({
     item,
+    statuses,
+    sourceTypes,
     html,
     markdown,
     ...links
@@ -64,11 +69,14 @@ export default function ShowVettingItem({
                 <dl className="grid gap-3 text-sm sm:grid-cols-4">
                     <div>
                         <dt className="text-muted-foreground">Status</dt>
-                        <dd>{item.status}</dd>
+                        <dd>{labelFor(statuses, item.status)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Source</dt>
-                        <dd>{item.source_detail ?? item.source_type}</dd>
+                        <dd>
+                            {item.source_detail ??
+                                labelFor(sourceTypes, item.source_type)}
+                        </dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Raised</dt>

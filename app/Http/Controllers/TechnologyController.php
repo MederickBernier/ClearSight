@@ -78,6 +78,9 @@ class TechnologyController extends Controller
 
         return Inertia::render('technologies/show', [
             'technology' => $technology,
+            'categories' => TechnologyCategory::options(),
+            'rings' => TechnologyRing::options(),
+            'statuses' => TechnologyStatus::options(),
             'markdown' => app(RenderTechnologyMarkdown::class)($technology),
             'html' => ['notes' => $this->renderMarkdown($technology->notes)],
             'usages' => $usages

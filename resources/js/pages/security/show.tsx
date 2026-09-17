@@ -10,14 +10,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
+import { labelFor } from '@/lib/utils';
 import { destroy, edit, exportMethod, index } from '@/routes/security-notes';
-import type { ItemLinkProps } from '@/types';
+import type { ItemLinkProps, SelectOption } from '@/types';
 import type { SecurityNote } from './types';
 
 type ShowProps = ItemLinkProps &
     TechnologyStackProps & {
         markdown: string;
         note: SecurityNote;
+        sources: SelectOption[];
+        severities: SelectOption[];
+        routes: SelectOption[];
+        statuses: SelectOption[];
         html: {
             finding: string | null;
             non_issue_reason: string | null;
@@ -27,6 +32,10 @@ type ShowProps = ItemLinkProps &
 
 export default function ShowSecurityNote({
     note,
+    sources,
+    severities,
+    routes,
+    statuses,
     html,
     stack,
     technologyOptions,
@@ -73,14 +82,18 @@ export default function ShowSecurityNote({
                     </div>
                 </div>
 
-                <dl className="grid gap-3 text-sm sm:grid-cols-3 lg:grid-cols-6">
+                <dl className="grid gap-3 text-sm sm:grid-cols-3 lg:grid-cols-4">
+                    <div>
+                        <dt className="text-muted-foreground">Status</dt>
+                        <dd>{labelFor(statuses, note.status)}</dd>
+                    </div>
                     <div>
                         <dt className="text-muted-foreground">Severity</dt>
-                        <dd>{note.severity}</dd>
+                        <dd>{labelFor(severities, note.severity)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Source</dt>
-                        <dd>{note.source}</dd>
+                        <dd>{labelFor(sources, note.source)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Category</dt>
@@ -88,7 +101,7 @@ export default function ShowSecurityNote({
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Routed to</dt>
-                        <dd>{note.routed_to}</dd>
+                        <dd>{labelFor(routes, note.routed_to)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Flagged</dt>
@@ -102,6 +115,14 @@ export default function ShowSecurityNote({
                                 : 'Open'}
                         </dd>
                     </div>
+                    {note.deferred_until && (
+                        <div>
+                            <dt className="text-muted-foreground">
+                                Deferred until
+                            </dt>
+                            <dd>{formatDate(note.deferred_until)}</dd>
+                        </div>
+                    )}
                 </dl>
 
                 {note.external_url && (

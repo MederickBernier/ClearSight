@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
 import { usePermissions } from '@/hooks/use-permissions';
+import { labelFor } from '@/lib/utils';
 import { destroy, edit, exportMethod, index } from '@/routes/decisions';
 import links from '@/routes/decisions/links';
 import type { ItemLinkProps, SelectOption } from '@/types';
@@ -44,6 +45,7 @@ type ShowProps = ItemLinkProps &
         };
         relationshipTypes: SelectOption[];
         linkTargets: DecisionRecord[];
+        statuses: SelectOption[];
     };
 
 function LinkRows({
@@ -59,9 +61,6 @@ function LinkRows({
     html: Record<number, string | null>;
     relationshipTypes: SelectOption[];
 }) {
-    const labelFor = (value: string) =>
-        relationshipTypes.find((type) => type.value === value)?.label ?? value;
-
     return (
         <div className="space-y-2">
             <h3 className="font-medium">{heading}</h3>
@@ -84,7 +83,10 @@ function LinkRows({
                                 <div className="space-y-1">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <Badge variant="outline">
-                                            {labelFor(link.relationship_type)}
+                                            {labelFor(
+                                                relationshipTypes,
+                                                link.relationship_type,
+                                            )}
                                         </Badge>
                                         <span className="font-mono text-sm">
                                             {other?.document_id}
@@ -136,6 +138,7 @@ export default function ShowDecision({
     markdown,
     relationshipTypes,
     linkTargets,
+    statuses,
     stack,
     technologyOptions,
     stackTarget,
@@ -182,7 +185,7 @@ export default function ShowDecision({
                 <dl className="grid gap-3 text-sm sm:grid-cols-4">
                     <div>
                         <dt className="text-muted-foreground">Status</dt>
-                        <dd>{record.status}</dd>
+                        <dd>{labelFor(statuses, record.status)}</dd>
                     </div>
                     <div>
                         <dt className="text-muted-foreground">Author</dt>

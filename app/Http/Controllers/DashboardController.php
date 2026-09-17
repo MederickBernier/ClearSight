@@ -17,6 +17,7 @@ use App\Models\RadarItem;
 use App\Models\SecurityNote;
 use App\Models\VettingItem;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -73,7 +74,7 @@ class DashboardController extends Controller
                 'kind' => 'Finding',
                 'label' => $note->title,
                 'url' => route('security-notes.show', $note),
-                'why' => $note->severity->label().', open since '.$note->date_flagged->toDateString(),
+                'why' => $note->severity->label().', open since '.$this->day($note->date_flagged),
                 'at' => $note->date_flagged->toDateString(),
             ];
         }
@@ -99,7 +100,7 @@ class DashboardController extends Controller
                 'kind' => 'Finding',
                 'label' => $note->title,
                 'url' => route('security-notes.show', $note),
-                'why' => 'Deferred until '.$note->deferred_until?->toDateString().', which has passed',
+                'why' => 'Deferred until '.($note->deferred_until ? $this->day($note->deferred_until) : '').', which has passed',
                 'at' => $note->deferred_until?->toDateString(),
             ];
         }
@@ -126,7 +127,7 @@ class DashboardController extends Controller
                 'kind' => 'Proposal',
                 'label' => $item->title,
                 'url' => route('vetting.show', $item),
-                'why' => 'Waiting on a prototype',
+                'why' => 'Waiting on a prototype since '.$this->day($item->date_raised),
                 'at' => $item->date_raised->toDateString(),
             ];
         }
@@ -146,6 +147,15 @@ class DashboardController extends Controller
         }
 
         return $this->attention = $this->mergeByRecord($items);
+    }
+
+    /**
+     * A calendar day as people read it, e.g. "Sep 1, 2026", rather than the
+     * ISO form the database keeps.
+     */
+    private function day(CarbonInterface $date): string
+    {
+        return $date->format('M j, Y');
     }
 
     /**

@@ -73,6 +73,8 @@ class PrototypeController extends Controller
     {
         return Inertia::render('prototypes/show', [
             'prototype' => $prototype,
+            'statuses' => PrototypeStatus::options(),
+            'confidenceLevels' => ConfidenceLevel::options(),
             'markdown' => app(RenderPrototypeMarkdown::class)($prototype),
             ...$this->technologyStackProps($prototype),
             ...$this->itemLinkProps($prototype),

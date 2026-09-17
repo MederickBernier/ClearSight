@@ -95,30 +95,34 @@ function Split({ slices }: { slices: Slice[] }) {
         );
     }
 
-    const shown = slices.filter((slice) => slice.value > 0);
+    // Colours are taken from each slice's place in the full list, before empty
+    // ones drop out, so a status keeps its colour when another reaches zero.
+    const shown = slices
+        .map((slice, index) => ({ ...slice, colour: (index % 5) + 1 }))
+        .filter((slice) => slice.value > 0);
 
     return (
         <div className="space-y-3">
             <div className="flex h-3 gap-[2px] overflow-hidden rounded-full">
-                {shown.map((slice, index) => (
+                {shown.map((slice) => (
                     <span
                         key={slice.label}
                         className="first:rounded-l-full last:rounded-r-full"
                         style={{
                             width: `${(slice.value / total) * 100}%`,
-                            background: `var(--series-${(index % 5) + 1})`,
+                            background: `var(--series-${slice.colour})`,
                         }}
                     />
                 ))}
             </div>
 
             <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                {shown.map((slice, index) => (
+                {shown.map((slice) => (
                     <li key={slice.label} className="flex items-center gap-2">
                         <span
                             className="size-2 rounded-full"
                             style={{
-                                background: `var(--series-${(index % 5) + 1})`,
+                                background: `var(--series-${slice.colour})`,
                             }}
                         />
                         <span>{slice.label}</span>
@@ -198,7 +202,7 @@ export default function MetricsPage({ metrics }: { metrics: Metrics }) {
                     title="Decisions"
                     question="Am I deciding things, or accumulating drafts?"
                 >
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
                         <Figure
                             value={metrics.decisions.total}
                             label="Recorded"

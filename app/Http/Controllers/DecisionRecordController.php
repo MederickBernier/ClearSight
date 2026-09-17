@@ -88,6 +88,7 @@ class DecisionRecordController extends Controller
 
         return Inertia::render('decisions/show', [
             'record' => $decisionRecord,
+            'statuses' => DecisionStatus::options(),
             ...$this->technologyStackProps($decisionRecord),
             // Rendered here so the copy button needs no round trip; the
             // download route renders the same document.

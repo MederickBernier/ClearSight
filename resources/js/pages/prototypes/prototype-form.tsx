@@ -172,7 +172,12 @@ export default function PrototypeForm({
                         </Label>
                         <NativeSelect
                             id="confidence_level"
-                            options={confidenceLevels}
+                            // An explicit blank: without it the select shows the
+                            // first level while the form still holds nothing.
+                            options={[
+                                { value: '', label: 'Choose…' },
+                                ...confidenceLevels,
+                            ]}
                             value={data.confidence_level}
                             onChange={(event) =>
                                 setData('confidence_level', event.target.value)

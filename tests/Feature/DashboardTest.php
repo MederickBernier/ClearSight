@@ -173,7 +173,9 @@ test('one record with several reasons is one row, carrying both', function () {
 
             expect($rows)->toHaveCount(1)
                 ->and($rows[0]['why'])->toContain('Critical')
-                ->and($rows[0]['why'])->toContain('which has passed');
+                ->and($rows[0]['why'])->toContain('which has passed')
+                // Written the way people read a date, not as the ISO string.
+                ->and($rows[0]['why'])->toContain(now()->subWeek()->format('M j, Y'));
         });
 });
 

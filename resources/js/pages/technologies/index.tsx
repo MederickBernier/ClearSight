@@ -5,6 +5,7 @@ import { RingBadge, StatusBadge } from '@/components/technology-badges';
 import { Button } from '@/components/ui/button';
 import { NativeSelect } from '@/components/ui/native-select';
 import { usePermissions } from '@/hooks/use-permissions';
+import { labelFor } from '@/lib/utils';
 import { breakdown, create, index, show } from '@/routes/technologies';
 import type { SelectOption } from '@/types';
 import type { Technology } from './types';
@@ -37,9 +38,6 @@ export default function TechnologiesIndex({
             { preserveScroll: true, preserveState: true, replace: true },
         );
     };
-
-    const labelFor = (options: SelectOption[], value: string) =>
-        options.find((option) => option.value === value)?.label ?? value;
 
     return (
         <>

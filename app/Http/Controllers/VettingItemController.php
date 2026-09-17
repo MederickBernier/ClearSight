@@ -69,6 +69,8 @@ class VettingItemController extends Controller
     {
         return Inertia::render('vetting/show', [
             'item' => $vettingItem,
+            'statuses' => VettingStatus::options(),
+            'sourceTypes' => VettingSourceType::options(),
             'markdown' => app(RenderVettingItemMarkdown::class)($vettingItem),
             ...$this->itemLinkProps($vettingItem),
             'html' => [

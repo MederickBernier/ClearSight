@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
+import { labelFor } from '@/lib/utils';
 import { create, index, show } from '@/routes/security-notes';
 import type { SelectOption } from '@/types';
 import type { SecurityNoteSummary } from './types';
@@ -19,14 +20,6 @@ const severityVariants: Record<
     high: 'default',
     critical: 'destructive',
 };
-
-function labelFor(options: SelectOption[], value: string | null) {
-    if (!value) {
-        return '—';
-    }
-
-    return options.find((option) => option.value === value)?.label ?? value;
-}
 
 export default function SecurityIndex({
     notes,

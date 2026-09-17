@@ -7,7 +7,9 @@ import { RingBadge, StatusBadge } from '@/components/technology-badges';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
+import { labelFor } from '@/lib/utils';
 import { destroy, edit, exportMethod, index } from '@/routes/technologies';
+import type { SelectOption } from '@/types';
 import type { Technology, UsageGroup } from './types';
 
 export default function ShowTechnology({
@@ -16,7 +18,13 @@ export default function ShowTechnology({
     usages,
     versions,
     markdown,
+    categories,
+    rings,
+    statuses,
 }: {
+    categories: SelectOption[];
+    rings: SelectOption[];
+    statuses: SelectOption[];
     technology: Technology;
     html: { notes: string | null };
     usages: UsageGroup[];
@@ -35,15 +43,15 @@ export default function ShowTechnology({
                         <Heading title={technology.name} />
                         <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="secondary">
-                                {technology.category}
+                                {labelFor(categories, technology.category)}
                             </Badge>
                             <RingBadge
                                 ring={technology.ring}
-                                label={technology.ring}
+                                label={labelFor(rings, technology.ring)}
                             />
                             <StatusBadge
                                 status={technology.status}
-                                label={technology.status}
+                                label={labelFor(statuses, technology.status)}
                             />
                             {technology.vendor && (
                                 <span className="text-sm text-muted-foreground">
