@@ -1,5 +1,6 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { ExternalLink, Pencil } from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import { MarkdownSection } from '@/components/markdown';
 import MarkdownExport from '@/components/markdown-export';
@@ -8,7 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { labelFor } from '@/lib/utils';
-import { destroy, edit, exportMethod, index } from '@/routes/technologies';
+import {
+    destroy,
+    edit,
+    exportMethod,
+    index,
+    show,
+} from '@/routes/technologies';
 import type { SelectOption } from '@/types';
 import type { Technology, UsageGroup } from './types';
 
@@ -75,11 +82,11 @@ export default function ShowTechnology({
                                     </Link>
                                 </Button>
 
-                                <Form {...destroy.form(technology.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(technology.id)}
+                                    title="Delete this technology?"
+                                    description="Everywhere it is recorded as used is removed with it. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -169,9 +176,12 @@ export default function ShowTechnology({
     );
 }
 
-ShowTechnology.layout = {
+// The record's own name, so the trail says where you are.
+ShowTechnology.layout = (props: {
+    technology: { name: string; id: number };
+}) => ({
     breadcrumbs: [
         { title: 'Technologies', href: index() },
-        { title: 'Technology', href: index() },
+        { title: props.technology.name, href: show(props.technology.id) },
     ],
-};
+});

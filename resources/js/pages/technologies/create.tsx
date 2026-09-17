@@ -21,6 +21,7 @@ export default function CreateTechnology(options: {
 
                 <TechnologyForm
                     {...options}
+                    cancelHref={index()}
                     submitLabel="Add technology"
                     submit={(form) => form.submit(store())}
                 />

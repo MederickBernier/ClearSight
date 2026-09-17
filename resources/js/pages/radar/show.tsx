@@ -4,7 +4,7 @@ import Heading from '@/components/heading';
 import ItemLinks from '@/components/item-links';
 import { MarkdownSection } from '@/components/markdown';
 import { formatDate } from '@/lib/dates';
-import { index } from '@/routes/radar';
+import { index, show } from '@/routes/radar';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import PromoteButton from './promote-button';
 import TriageForm from './triage-form';
@@ -88,9 +88,10 @@ export default function ShowRadarItem({
     );
 }
 
-ShowRadarItem.layout = {
+// The record's own name, so the trail says where you are.
+ShowRadarItem.layout = (props: { item: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Tech radar', href: index() },
-        { title: 'Item', href: index() },
+        { title: props.item.title, href: show(props.item.id) },
     ],
-};
+});

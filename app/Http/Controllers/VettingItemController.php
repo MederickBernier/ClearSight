@@ -28,15 +28,19 @@ class VettingItemController extends Controller
     public function index(Request $request): Response
     {
         $project = $this->projectFilter($request);
+        $status = VettingStatus::tryFrom($request->string('status')->toString());
 
         return Inertia::render('vetting/index', [
             'items' => VettingItem::query()
                 ->tap(fn ($query) => $this->scopeToProject($query, $project))
+                ->when($status, fn ($query) => $query->where('status', $status))
                 ->orderByDesc('date_raised')
                 ->orderByDesc('id')
-                ->get(['id', 'title', 'source_type', 'status', 'date_raised', 'date_resolved']),
+                ->paginate(25, ['id', 'title', 'source_type', 'status', 'date_raised', 'date_resolved'])
+                ->withQueryString(),
             'projectFilters' => $this->projectFilterOptions(),
             'projectFilter' => $project ?? '',
+            'statusFilter' => $status->value ?? '',
             'statuses' => VettingStatus::options(),
             'sourceTypes' => VettingSourceType::options(),
         ]);

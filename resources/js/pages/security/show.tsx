@@ -1,5 +1,6 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { ExternalLink, Pencil } from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import ItemLinks from '@/components/item-links';
 import { MarkdownSection } from '@/components/markdown';
@@ -11,7 +12,13 @@ import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
-import { destroy, edit, exportMethod, index } from '@/routes/security-notes';
+import {
+    destroy,
+    edit,
+    exportMethod,
+    index,
+    show,
+} from '@/routes/security-notes';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import type { SecurityNote } from './types';
 
@@ -72,11 +79,11 @@ export default function ShowSecurityNote({
                                     </Link>
                                 </Button>
 
-                                <Form {...destroy.form(note.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(note.id)}
+                                    title="Delete this finding?"
+                                    description="Its links to other records are removed with it. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -164,9 +171,10 @@ export default function ShowSecurityNote({
     );
 }
 
-ShowSecurityNote.layout = {
+// The record's own name, so the trail says where you are.
+ShowSecurityNote.layout = (props: { note: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Security posture', href: index() },
-        { title: 'Note', href: index() },
+        { title: props.note.title, href: show(props.note.id) },
     ],
-};
+});

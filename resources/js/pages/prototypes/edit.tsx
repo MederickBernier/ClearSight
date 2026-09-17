@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/prototypes';
+import { index, show, update, edit } from '@/routes/prototypes';
 import type { SelectOption } from '@/types';
 import PrototypeForm from './prototype-form';
 import type { Prototype } from './types';
@@ -28,6 +28,7 @@ export default function EditPrototype({
                     statuses={statuses}
                     confidenceLevels={confidenceLevels}
                     projects={projects}
+                    cancelHref={show(prototype.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(prototype.id))}
                 />
@@ -36,9 +37,13 @@ export default function EditPrototype({
     );
 }
 
-EditPrototype.layout = {
+// The record's own name, so the trail says where you are.
+EditPrototype.layout = (props: {
+    prototype: { title: string; id: number };
+}) => ({
     breadcrumbs: [
         { title: 'Prototypes', href: index() },
-        { title: 'Edit prototype', href: index() },
+        { title: props.prototype.title, href: show(props.prototype.id) },
+        { title: 'Edit', href: edit(props.prototype.id) },
     ],
-};
+});

@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/decisions';
+import { index, show, update, edit } from '@/routes/decisions';
 import type { SelectOption } from '@/types';
 import DecisionForm from './decision-form';
 import type { DecisionRecord } from './types';
@@ -28,6 +28,7 @@ export default function EditDecision({
                     record={record}
                     statuses={statuses}
                     projects={projects}
+                    cancelHref={show(record.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(record.id))}
                 />
@@ -36,9 +37,11 @@ export default function EditDecision({
     );
 }
 
-EditDecision.layout = {
+// The record's own name, so the trail says where you are.
+EditDecision.layout = (props: { record: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Decision records', href: index() },
-        { title: 'Edit record', href: index() },
+        { title: props.record.title, href: show(props.record.id) },
+        { title: 'Edit', href: edit(props.record.id) },
     ],
-};
+});

@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/projects';
+import { index, show, update, edit } from '@/routes/projects';
 import ProjectForm from './project-form';
 import type { Project } from './types';
 
@@ -17,6 +17,7 @@ export default function EditProject({ project }: { project: Project }) {
 
                 <ProjectForm
                     project={project}
+                    cancelHref={show(project.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(project.id))}
                 />
@@ -25,9 +26,11 @@ export default function EditProject({ project }: { project: Project }) {
     );
 }
 
-EditProject.layout = {
+// The record's own name, so the trail says where you are.
+EditProject.layout = (props: { project: { name: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Projects', href: index() },
-        { title: 'Edit project', href: index() },
+        { title: props.project.name, href: show(props.project.id) },
+        { title: 'Edit', href: edit(props.project.id) },
     ],
-};
+});

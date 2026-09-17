@@ -44,11 +44,11 @@ test('the index lists items newest raised first', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('vetting/index')
-            ->has('items', 2)
-            ->where('items.0.title', 'Newer')
+            ->has('items.data', 2)
+            ->where('items.data.0.title', 'Newer')
             // A bare day, not UTC midnight, or browsers west of UTC show the day before.
-            ->where('items.0.date_raised', '2026-06-01')
-            ->where('items.1.title', 'Older')
+            ->where('items.data.0.date_raised', '2026-06-01')
+            ->where('items.data.1.title', 'Older')
             ->has('statuses', 5)
             ->has('sourceTypes', 4));
 });
@@ -157,4 +157,24 @@ test('an item cannot be raised on a day that has not happened yet', function () 
     ]))->assertSessionHasErrors('date_raised');
 
     expect(VettingItem::count())->toBe(0);
+});
+
+test('the log can be narrowed to one status and is paged', function () {
+    VettingItem::factory()->count(26)->create(['status' => VettingStatus::New]);
+    VettingItem::factory()->rejected()->create(['title' => 'Turned down']);
+
+    $this->get(route('vetting.index', ['status' => 'rejected']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('items.data', 1)
+            ->where('items.data.0.title', 'Turned down')
+            ->where('statusFilter', 'rejected'));
+
+    $this->get(route('vetting.index', ['status' => 'new']))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('items.data', 25)
+            ->where('items.total', 26)
+            // The next page link keeps the filter.
+            ->where('items.next_page_url', fn (string $url) => str_contains($url, 'status=new')));
 });

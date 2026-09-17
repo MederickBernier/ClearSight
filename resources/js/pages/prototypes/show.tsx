@@ -1,5 +1,6 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { GitBranch, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { GitBranch, Pencil } from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import ItemLinks from '@/components/item-links';
 import { MarkdownSection } from '@/components/markdown';
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
-import { destroy, edit, exportMethod, index } from '@/routes/prototypes';
+import { destroy, edit, exportMethod, index, show } from '@/routes/prototypes';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import type { Prototype } from './types';
 
@@ -65,11 +66,11 @@ export default function ShowPrototype({
                                     </Link>
                                 </Button>
 
-                                <Form {...destroy.form(prototype.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(prototype.id)}
+                                    title="Delete this prototype?"
+                                    description="Its links to other records are removed with it. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -152,9 +153,12 @@ export default function ShowPrototype({
     );
 }
 
-ShowPrototype.layout = {
+// The record's own name, so the trail says where you are.
+ShowPrototype.layout = (props: {
+    prototype: { title: string; id: number };
+}) => ({
     breadcrumbs: [
         { title: 'Prototypes', href: index() },
-        { title: 'Prototype', href: index() },
+        { title: props.prototype.title, href: show(props.prototype.id) },
     ],
-};
+});

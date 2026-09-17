@@ -4,7 +4,7 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/dates';
-import { index, show } from '@/routes/projects';
+import { index, show, timeline } from '@/routes/projects';
 import type { Project } from './types';
 
 type TimelineEvent = {
@@ -127,9 +127,13 @@ export default function ProjectTimeline({
     );
 }
 
-ProjectTimeline.layout = {
+// The record's own name, so the trail says where you are.
+ProjectTimeline.layout = (props: {
+    project: { name: string; id: number };
+}) => ({
     breadcrumbs: [
         { title: 'Projects', href: index() },
-        { title: 'Timeline', href: index() },
+        { title: props.project.name, href: show(props.project.id) },
+        { title: 'Timeline', href: timeline(props.project.id) },
     ],
-};
+});

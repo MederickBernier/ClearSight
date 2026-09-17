@@ -24,6 +24,7 @@ export default function CreateDecision({
                 <DecisionForm
                     statuses={statuses}
                     projects={projects}
+                    cancelHref={index()}
                     submitLabel="Create record"
                     submit={(form) => form.submit(store())}
                 />

@@ -30,18 +30,22 @@ class PrototypeController extends Controller
     public function index(Request $request): Response
     {
         $project = $this->projectFilter($request);
+        $status = PrototypeStatus::tryFrom($request->string('status')->toString());
 
         return Inertia::render('prototypes/index', [
             'prototypes' => Prototype::query()
                 ->tap(fn ($query) => $this->scopeToProject($query, $project))
+                ->when($status, fn ($query) => $query->where('status', $status))
                 ->orderByDesc('date_started')
                 ->orderByDesc('id')
-                ->get([
+                ->paginate(25, [
                     'id', 'title', 'status', 'confidence_level',
                     'is_reusable', 'date_started', 'date_completed',
-                ]),
+                ])
+                ->withQueryString(),
             'projectFilters' => $this->projectFilterOptions(),
             'projectFilter' => $project ?? '',
+            'statusFilter' => $status->value ?? '',
             ...$this->formOptions(),
         ]);
     }

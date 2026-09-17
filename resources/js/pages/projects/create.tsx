@@ -15,6 +15,7 @@ export default function CreateProject() {
                 />
 
                 <ProjectForm
+                    cancelHref={index()}
                     submitLabel="Create project"
                     submit={(form) => form.submit(store())}
                 />

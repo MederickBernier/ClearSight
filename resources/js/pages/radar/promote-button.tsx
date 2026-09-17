@@ -2,6 +2,7 @@ import { Form } from '@inertiajs/react';
 import { ArrowUpRight, FlaskConical } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { usePermissions } from '@/hooks/use-permissions';
 import { promote } from '@/routes/radar';
 import type { RadarItem } from './types';
@@ -23,10 +24,28 @@ export default function PromoteButton({ item }: { item: RadarItem }) {
                         {...promote.form(item.id)}
                         options={{ preserveScroll: true }}
                     >
-                        <input type="hidden" name="target" value="vetting" />
-                        <Button type="submit" variant="outline" size="sm">
-                            <ArrowUpRight /> Vet this
-                        </Button>
+                        {({ processing }) => (
+                            <>
+                                <input
+                                    type="hidden"
+                                    name="target"
+                                    value="vetting"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    variant="outline"
+                                    size="sm"
+                                >
+                                    {processing ? (
+                                        <Spinner />
+                                    ) : (
+                                        <ArrowUpRight />
+                                    )}{' '}
+                                    Vet this
+                                </Button>
+                            </>
+                        )}
                     </Form>
                 )
             )}
@@ -39,10 +58,28 @@ export default function PromoteButton({ item }: { item: RadarItem }) {
                         {...promote.form(item.id)}
                         options={{ preserveScroll: true }}
                     >
-                        <input type="hidden" name="target" value="prototype" />
-                        <Button type="submit" variant="outline" size="sm">
-                            <FlaskConical /> Try this
-                        </Button>
+                        {({ processing }) => (
+                            <>
+                                <input
+                                    type="hidden"
+                                    name="target"
+                                    value="prototype"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    variant="outline"
+                                    size="sm"
+                                >
+                                    {processing ? (
+                                        <Spinner />
+                                    ) : (
+                                        <FlaskConical />
+                                    )}{' '}
+                                    Try this
+                                </Button>
+                            </>
+                        )}
                     </Form>
                 )
             )}

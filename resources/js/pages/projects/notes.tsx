@@ -1,6 +1,7 @@
-import { Form, useForm } from '@inertiajs/react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { useForm } from '@inertiajs/react';
+import { Pencil } from 'lucide-react';
 import { useState } from 'react';
+import ConfirmDelete from '@/components/confirm-delete';
 import InputError from '@/components/input-error';
 import { Markdown } from '@/components/markdown';
 import MarkdownField from '@/components/markdown-field';
@@ -145,19 +146,13 @@ export default function ProjectNotes({
                                             <Pencil />
                                         </Button>
 
-                                        <Form
-                                            {...destroy.form(note.id)}
-                                            options={{ preserveScroll: true }}
-                                        >
-                                            <Button
-                                                type="submit"
-                                                variant="ghost"
-                                                size="icon"
-                                                aria-label={`Remove ${note.title}`}
-                                            >
-                                                <Trash2 />
-                                            </Button>
-                                        </Form>
+                                        <ConfirmDelete
+                                            icon
+                                            action={destroy.form(note.id)}
+                                            title={`Delete the note “${note.title}”?`}
+                                            description="This cannot be undone."
+                                            label="Delete"
+                                        />
                                     </div>
                                 )}
                             </div>

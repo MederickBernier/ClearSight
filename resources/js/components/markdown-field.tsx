@@ -116,6 +116,16 @@ export default function MarkdownField({
                 name={name}
                 value={value}
                 onChange={(event) => onChange?.(event.target.value)}
+                // Ctrl/Cmd+Enter saves without reaching for the mouse.
+                onKeyDown={(event) => {
+                    if (
+                        event.key === 'Enter' &&
+                        (event.metaKey || event.ctrlKey)
+                    ) {
+                        event.preventDefault();
+                        event.currentTarget.form?.requestSubmit();
+                    }
+                }}
                 rows={rows}
                 // A hidden required field would block submit with no visible
                 // message; the server still checks it.

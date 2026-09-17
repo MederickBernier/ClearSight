@@ -32,18 +32,22 @@ class SecurityNoteController extends Controller
     public function index(Request $request): Response
     {
         $project = $this->projectFilter($request);
+        $status = SecurityNoteStatus::tryFrom($request->string('status')->toString());
 
         return Inertia::render('security/index', [
             'notes' => SecurityNote::query()
                 ->tap(fn ($query) => $this->scopeToProject($query, $project))
+                ->when($status, fn ($query) => $query->where('status', $status))
                 ->orderByDesc('date_flagged')
                 ->orderByDesc('id')
-                ->get([
+                ->paginate(25, [
                     'id', 'title', 'source', 'category', 'severity',
                     'is_issue', 'routed_to', 'status', 'date_flagged', 'date_resolved',
-                ]),
+                ])
+                ->withQueryString(),
             'projectFilters' => $this->projectFilterOptions(),
             'projectFilter' => $project ?? '',
+            'statusFilter' => $status->value ?? '',
             ...$this->formOptions(),
         ]);
     }

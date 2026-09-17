@@ -54,8 +54,8 @@ test('the index lists notes newest flagged first', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('security/index')
-            ->has('notes', 2)
-            ->where('notes.0.title', 'Newer')
+            ->has('notes.data', 2)
+            ->where('notes.data.0.title', 'Newer')
             ->has('sources', 6)
             ->has('severities', 4)
             ->has('routes', 4)

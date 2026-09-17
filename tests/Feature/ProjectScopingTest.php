@@ -27,17 +27,17 @@ test('each module index can be narrowed to one project', function () {
 
     $this->get(route('decisions.index', ['project' => $project->id]))
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('records', 2)
+            ->has('records.data', 2)
             ->where('projectFilter', (string) $project->id));
 
     $this->get(route('vetting.index', ['project' => $project->id]))
-        ->assertInertia(fn (AssertableInertia $page) => $page->has('items', 1));
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('items.data', 1));
 
     $this->get(route('prototypes.index', ['project' => $project->id]))
-        ->assertInertia(fn (AssertableInertia $page) => $page->has('prototypes', 1));
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('prototypes.data', 1));
 
     $this->get(route('security-notes.index', ['project' => $project->id]))
-        ->assertInertia(fn (AssertableInertia $page) => $page->has('notes', 1));
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('notes.data', 1));
 });
 
 test('work with no project can be singled out', function () {
@@ -49,7 +49,7 @@ test('work with no project can be singled out', function () {
     $this->get(route('vetting.index', ['project' => 'none']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('items', 1)
+            ->has('items.data', 1)
             ->where('projectFilter', 'none'));
 });
 
@@ -60,7 +60,7 @@ test('no filter shows everything', function () {
     $this->get(route('vetting.index'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('items', 2)
+            ->has('items.data', 2)
             ->where('projectFilter', '')
             ->has('projectFilters', 3));
 });

@@ -1,12 +1,16 @@
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import MarkdownField from '@/components/markdown-field';
 import ProjectField from '@/components/project-field';
+import SegmentedControl from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import { localToday } from '@/lib/dates';
 import type { SelectOption } from '@/types';
 import type { SecurityNote } from './types';
@@ -65,14 +69,19 @@ export default function SecurityForm({
     options,
     submit,
     submitLabel,
+    cancelHref,
 }: {
     note?: SecurityNote;
     options: SecurityFormOptions;
     submit: (form: ReturnType<typeof useForm<SecurityFormData>>) => void;
     submitLabel: string;
+    /** Where Cancel goes: the record when editing, the list when creating. */
+    cancelHref: NonNullable<InertiaLinkProps['href']>;
 }) {
     const form = useForm<SecurityFormData>(initialData(note, options));
     const { data, setData, processing, errors } = form;
+
+    useUnsavedChanges(form.isDirty && !processing);
 
     return (
         <form
@@ -129,13 +138,12 @@ export default function SecurityForm({
 
                 <div className="grid gap-2">
                     <Label htmlFor="severity">Severity</Label>
-                    <NativeSelect
+                    <SegmentedControl
                         id="severity"
+                        label="Severity"
                         options={options.severities}
                         value={data.severity}
-                        onChange={(event) =>
-                            setData('severity', event.target.value)
-                        }
+                        onChange={(next) => setData('severity', next)}
                     />
                     <InputError message={errors.severity} />
                 </div>
@@ -264,9 +272,15 @@ export default function SecurityForm({
                 </div>
             )}
 
-            <Button type="submit" disabled={processing}>
-                {submitLabel}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button type="submit" disabled={processing}>
+                    {processing && <Spinner />}
+                    {submitLabel}
+                </Button>
+                <Button type="button" variant="ghost" asChild>
+                    <Link href={cancelHref}>Cancel</Link>
+                </Button>
+            </div>
         </form>
     );
 }

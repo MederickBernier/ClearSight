@@ -1,12 +1,16 @@
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import MarkdownField from '@/components/markdown-field';
 import ProjectField from '@/components/project-field';
+import SegmentedControl from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import { localToday } from '@/lib/dates';
 import type { SelectOption } from '@/types';
 import type { Prototype } from './types';
@@ -56,6 +60,7 @@ export default function PrototypeForm({
     confidenceLevels,
     submit,
     submitLabel,
+    cancelHref,
 }: {
     prototype?: Prototype;
     projects: SelectOption[];
@@ -63,9 +68,13 @@ export default function PrototypeForm({
     confidenceLevels: SelectOption[];
     submit: (form: ReturnType<typeof useForm<PrototypeFormData>>) => void;
     submitLabel: string;
+    /** Where Cancel goes: the record when editing, the list when creating. */
+    cancelHref: NonNullable<InertiaLinkProps['href']>;
 }) {
     const form = useForm<PrototypeFormData>(initialData(prototype, statuses));
     const { data, setData, processing, errors } = form;
+
+    useUnsavedChanges(form.isDirty && !processing);
 
     const isCompleted = data.status === COMPLETED;
     const isAbandoned = data.status === ABANDONED;
@@ -170,17 +179,13 @@ export default function PrototypeForm({
                         <Label htmlFor="confidence_level">
                             Confidence in the result
                         </Label>
-                        <NativeSelect
+                        <SegmentedControl
                             id="confidence_level"
-                            // An explicit blank: without it the select shows the
-                            // first level while the form still holds nothing.
-                            options={[
-                                { value: '', label: 'Choose…' },
-                                ...confidenceLevels,
-                            ]}
+                            label="Confidence in the result"
+                            options={confidenceLevels}
                             value={data.confidence_level}
-                            onChange={(event) =>
-                                setData('confidence_level', event.target.value)
+                            onChange={(next) =>
+                                setData('confidence_level', next)
                             }
                         />
                         <InputError message={errors.confidence_level} />
@@ -228,9 +233,15 @@ export default function PrototypeForm({
                 />
             )}
 
-            <Button type="submit" disabled={processing}>
-                {submitLabel}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button type="submit" disabled={processing}>
+                    {processing && <Spinner />}
+                    {submitLabel}
+                </Button>
+                <Button type="button" variant="ghost" asChild>
+                    <Link href={cancelHref}>Cancel</Link>
+                </Button>
+            </div>
         </form>
     );
 }

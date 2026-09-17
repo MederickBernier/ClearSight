@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/vetting';
+import { index, show, update, edit } from '@/routes/vetting';
 import type { SelectOption } from '@/types';
 import type { VettingItem } from './types';
 import VettingForm from './vetting-form';
@@ -28,6 +28,7 @@ export default function EditVettingItem({
                     statuses={statuses}
                     sourceTypes={sourceTypes}
                     projects={projects}
+                    cancelHref={show(item.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(item.id))}
                 />
@@ -36,9 +37,11 @@ export default function EditVettingItem({
     );
 }
 
-EditVettingItem.layout = {
+// The record's own name, so the trail says where you are.
+EditVettingItem.layout = (props: { item: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Vetting log', href: index() },
-        { title: 'Edit item', href: index() },
+        { title: props.item.title, href: show(props.item.id) },
+        { title: 'Edit', href: edit(props.item.id) },
     ],
-};
+});

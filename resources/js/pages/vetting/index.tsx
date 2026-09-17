@@ -1,26 +1,29 @@
 import { Head, Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import Heading from '@/components/heading';
-import ProjectFilter from '@/components/project-filter';
-import { Badge } from '@/components/ui/badge';
+import ListFilters, { EmptyList } from '@/components/list-filters';
+import Pagination from '@/components/pagination';
+import RecordStatusBadge from '@/components/record-status-badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
 import { create, index, show } from '@/routes/vetting';
-import type { SelectOption } from '@/types';
+import type { Paginated, SelectOption } from '@/types';
 import type { VettingItemSummary } from './types';
 
 export default function VettingIndex({
     items,
     projectFilters,
     projectFilter,
+    statusFilter,
     statuses,
     sourceTypes,
 }: {
-    items: VettingItemSummary[];
+    items: Paginated<VettingItemSummary>;
     projectFilters: SelectOption[];
     projectFilter: string;
+    statusFilter: string;
     statuses: SelectOption[];
     sourceTypes: SelectOption[];
 }) {
@@ -31,7 +34,7 @@ export default function VettingIndex({
             <Head title="Vetting log" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Vetting log"
                         description="Proposals from intake through to a verdict"
@@ -46,16 +49,20 @@ export default function VettingIndex({
                     )}
                 </div>
 
-                <ProjectFilter
+                <ListFilters
                     url={index().url}
-                    options={projectFilters}
-                    value={projectFilter}
+                    statuses={statuses}
+                    status={statusFilter}
+                    projects={projectFilters}
+                    project={projectFilter}
                 />
 
-                {items.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                        Nothing in the log yet.
-                    </p>
+                {items.data.length === 0 ? (
+                    <EmptyList
+                        filtered={!!statusFilter || !!projectFilter}
+                        url={index().url}
+                        nothingYet="Nothing in the log yet."
+                    />
                 ) : (
                     <div className="overflow-x-auto rounded-xl border border-sidebar-border/70">
                         <table className="w-full text-sm">
@@ -79,7 +86,7 @@ export default function VettingIndex({
                                 </tr>
                             </thead>
                             <tbody>
-                                {items.map((item) => (
+                                {items.data.map((item) => (
                                     <tr
                                         key={item.id}
                                         className="border-t border-sidebar-border/70"
@@ -99,12 +106,13 @@ export default function VettingIndex({
                                             )}
                                         </td>
                                         <td className="px-4 py-2">
-                                            <Badge variant="secondary">
-                                                {labelFor(
+                                            <RecordStatusBadge
+                                                status={item.status}
+                                                label={labelFor(
                                                     statuses,
                                                     item.status,
                                                 )}
-                                            </Badge>
+                                            />
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                             {formatDate(item.date_raised)}
@@ -120,6 +128,8 @@ export default function VettingIndex({
                         </table>
                     </div>
                 )}
+
+                <Pagination page={items} />
             </div>
         </>
     );

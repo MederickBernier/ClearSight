@@ -27,6 +27,7 @@ export default function CreatePrototype({
                     statuses={statuses}
                     confidenceLevels={confidenceLevels}
                     projects={projects}
+                    cancelHref={index()}
                     submitLabel="Create prototype"
                     submit={(form) => form.submit(store())}
                 />

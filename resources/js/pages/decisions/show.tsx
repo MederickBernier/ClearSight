@@ -1,5 +1,6 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil } from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import ItemLinks from '@/components/item-links';
@@ -15,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
 import { usePermissions } from '@/hooks/use-permissions';
 import { labelFor } from '@/lib/utils';
-import { destroy, edit, exportMethod, index } from '@/routes/decisions';
+import { destroy, edit, exportMethod, index, show } from '@/routes/decisions';
 import links from '@/routes/decisions/links';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import SupersedeForm from './supersede-form';
@@ -109,19 +110,13 @@ function LinkRows({
                                 </div>
 
                                 {direction === 'outgoing' && (
-                                    <Form
-                                        {...links.destroy.form(link.id)}
-                                        options={{ preserveScroll: true }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            variant="ghost"
-                                            size="icon"
-                                            aria-label="Remove link"
-                                        >
-                                            <Trash2 />
-                                        </Button>
-                                    </Form>
+                                    <ConfirmDelete
+                                        icon
+                                        action={links.destroy.form(link.id)}
+                                        title="Remove this decision link?"
+                                        description="Both decisions stay; only the relationship between them goes."
+                                        label="Remove"
+                                    />
                                 )}
                             </li>
                         );
@@ -172,11 +167,11 @@ export default function ShowDecision({
 
                                 <SupersedeForm record={record} />
 
-                                <Form {...destroy.form(record.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(record.id)}
+                                    title="Delete this decision record?"
+                                    description="Its options and decision links are deleted with it. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -397,9 +392,15 @@ export default function ShowDecision({
     );
 }
 
-ShowDecision.layout = {
+// The record's own name, so the trail says where you are.
+ShowDecision.layout = (props: {
+    record: { title: string; id: number; document_id: string };
+}) => ({
     breadcrumbs: [
         { title: 'Decision records', href: index() },
-        { title: 'Record', href: index() },
+        {
+            title: `${props.record.document_id} ${props.record.title}`,
+            href: show(props.record.id),
+        },
     ],
-};
+});

@@ -1,6 +1,7 @@
-import { Form, Link, router, useForm } from '@inertiajs/react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Link, router, useForm } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import ConfirmDelete from '@/components/confirm-delete';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,19 +65,13 @@ function LinkRows({
                             </div>
 
                             {canWrite && (
-                                <Form
-                                    {...destroy.form(link.id)}
-                                    options={{ preserveScroll: true }}
-                                >
-                                    <Button
-                                        type="submit"
-                                        variant="ghost"
-                                        size="icon"
-                                        aria-label="Remove link"
-                                    >
-                                        <Trash2 />
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    icon
+                                    action={destroy.form(link.id)}
+                                    title="Remove this link?"
+                                    description="The two records stay; only the connection between them goes."
+                                    label="Remove"
+                                />
                             )}
                         </li>
                     ))}

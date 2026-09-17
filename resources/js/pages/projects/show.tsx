@@ -1,6 +1,7 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { History, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { History, Pencil } from 'lucide-react';
 import type { ReactNode } from 'react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import { MarkdownSection } from '@/components/markdown';
 import MarkdownExport from '@/components/markdown-export';
@@ -18,6 +19,7 @@ import {
     exportMethod,
     index,
     timeline,
+    show,
 } from '@/routes/projects';
 import { show as prototypeShow } from '@/routes/prototypes';
 import { show as securityShow } from '@/routes/security-notes';
@@ -148,11 +150,11 @@ export default function ShowProject({
                                     </Link>
                                 </Button>
 
-                                <Form {...destroy.form(project.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(project.id)}
+                                    title="Delete this project?"
+                                    description="Its notes are deleted with it. Records filed under it are kept, unfiled. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -251,9 +253,10 @@ export default function ShowProject({
     );
 }
 
-ShowProject.layout = {
+// The record's own name, so the trail says where you are.
+ShowProject.layout = (props: { project: { name: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Projects', href: index() },
-        { title: 'Project', href: index() },
+        { title: props.project.name, href: show(props.project.id) },
     ],
-};
+});

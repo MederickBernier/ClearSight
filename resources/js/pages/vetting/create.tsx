@@ -27,6 +27,7 @@ export default function CreateVettingItem({
                     statuses={statuses}
                     sourceTypes={sourceTypes}
                     projects={projects}
+                    cancelHref={index()}
                     submitLabel="Create item"
                     submit={(form) => form.submit(store())}
                 />

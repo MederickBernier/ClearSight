@@ -1,5 +1,6 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { ExternalLink, Pencil } from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import ItemLinks from '@/components/item-links';
 import { MarkdownSection } from '@/components/markdown';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
-import { destroy, edit, exportMethod, index } from '@/routes/vetting';
+import { destroy, edit, exportMethod, index, show } from '@/routes/vetting';
 import type { ItemLinkProps, SelectOption } from '@/types';
 import type { VettingItem } from './types';
 
@@ -56,11 +57,11 @@ export default function ShowVettingItem({
                                     </Link>
                                 </Button>
 
-                                <Form {...destroy.form(item.id)}>
-                                    <Button type="submit" variant="destructive">
-                                        <Trash2 /> Delete
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    action={destroy.form(item.id)}
+                                    title="Delete this proposal?"
+                                    description="Its links to other records are removed with it. This cannot be undone."
+                                />
                             </>
                         )}
                     </div>
@@ -122,9 +123,10 @@ export default function ShowVettingItem({
     );
 }
 
-ShowVettingItem.layout = {
+// The record's own name, so the trail says where you are.
+ShowVettingItem.layout = (props: { item: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Vetting log', href: index() },
-        { title: 'Item', href: index() },
+        { title: props.item.title, href: show(props.item.id) },
     ],
-};
+});

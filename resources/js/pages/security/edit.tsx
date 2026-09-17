@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/security-notes';
+import { index, show, update, edit } from '@/routes/security-notes';
 import SecurityForm from './security-form';
 import type { SecurityFormOptions } from './security-form';
 import type { SecurityNote } from './types';
@@ -19,6 +19,7 @@ export default function EditSecurityNote({
                 <SecurityForm
                     note={note}
                     options={options}
+                    cancelHref={show(note.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(note.id))}
                 />
@@ -27,9 +28,11 @@ export default function EditSecurityNote({
     );
 }
 
-EditSecurityNote.layout = {
+// The record's own name, so the trail says where you are.
+EditSecurityNote.layout = (props: { note: { title: string; id: number } }) => ({
     breadcrumbs: [
         { title: 'Security posture', href: index() },
-        { title: 'Edit note', href: index() },
+        { title: props.note.title, href: show(props.note.id) },
+        { title: 'Edit', href: edit(props.note.id) },
     ],
-};
+});

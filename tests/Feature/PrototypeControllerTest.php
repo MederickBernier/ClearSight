@@ -46,9 +46,9 @@ test('the index lists prototypes newest started first', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('prototypes/index')
-            ->has('prototypes', 2)
-            ->where('prototypes.0.title', 'Newer')
-            ->where('prototypes.1.title', 'Older')
+            ->has('prototypes.data', 2)
+            ->where('prototypes.data.0.title', 'Newer')
+            ->where('prototypes.data.1.title', 'Older')
             ->has('statuses', 4)
             ->has('confidenceLevels', 3));
 });

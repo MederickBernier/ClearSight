@@ -1,6 +1,7 @@
-import { Form, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import { Trash2 } from 'lucide-react';
+import {} from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -87,19 +88,13 @@ export default function TechnologyStack({
                             </span>
 
                             {canWrite && (
-                                <Form
-                                    {...destroy.form(entry.id)}
-                                    options={{ preserveScroll: true }}
-                                >
-                                    <Button
-                                        type="submit"
-                                        variant="ghost"
-                                        size="icon"
-                                        aria-label={`Remove ${entry.name}`}
-                                    >
-                                        <Trash2 />
-                                    </Button>
-                                </Form>
+                                <ConfirmDelete
+                                    icon
+                                    action={destroy.form(entry.id)}
+                                    title={`Remove ${entry.name} from this record?`}
+                                    description="The technology itself is kept."
+                                    label="Remove"
+                                />
                             )}
                         </li>
                     ))}

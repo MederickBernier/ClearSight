@@ -17,6 +17,7 @@ export default function CreateSecurityNote(options: SecurityFormOptions) {
 
                 <SecurityForm
                     options={options}
+                    cancelHref={index()}
                     submitLabel="Create note"
                     submit={(form) => form.submit(store())}
                 />

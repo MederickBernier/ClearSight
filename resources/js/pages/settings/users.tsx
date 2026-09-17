@@ -1,14 +1,16 @@
 import { Form, Head, useForm } from '@inertiajs/react';
-import { Trash2 } from 'lucide-react';
+import {} from 'lucide-react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import SegmentedControl from '@/components/segmented-control';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
 import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
 import { index, store, update, destroy } from '@/routes/users';
 
 type ManagedUser = {
@@ -124,15 +126,13 @@ export default function Users({ users }: { users: ManagedUser[] }) {
 
                     <div className="grid gap-2">
                         <Label htmlFor="access">Access</Label>
-                        <NativeSelect
+                        <SegmentedControl
                             id="access"
+                            label="Access"
                             options={accessOptions}
                             value={data.is_read_only ? 'read-only' : 'full'}
-                            onChange={(event) =>
-                                setData(
-                                    'is_read_only',
-                                    event.target.value === 'read-only',
-                                )
+                            onChange={(next) =>
+                                setData('is_read_only', next === 'read-only')
                             }
                         />
                         <p className="text-sm text-muted-foreground">
@@ -180,37 +180,39 @@ export default function Users({ users }: { users: ManagedUser[] }) {
                                         {...update.form(user.id)}
                                         options={{ preserveScroll: true }}
                                     >
-                                        <input
-                                            type="hidden"
-                                            name="is_read_only"
-                                            value={
-                                                user.is_read_only ? '0' : '1'
-                                            }
-                                        />
-                                        <Button
-                                            type="submit"
-                                            variant="outline"
-                                            size="sm"
-                                        >
-                                            {user.is_read_only
-                                                ? 'Give full access'
-                                                : 'Make read-only'}
-                                        </Button>
+                                        {({ processing }) => (
+                                            <>
+                                                <input
+                                                    type="hidden"
+                                                    name="is_read_only"
+                                                    value={
+                                                        user.is_read_only
+                                                            ? '0'
+                                                            : '1'
+                                                    }
+                                                />
+                                                <Button
+                                                    type="submit"
+                                                    disabled={processing}
+                                                    variant="outline"
+                                                    size="sm"
+                                                >
+                                                    {processing && <Spinner />}
+                                                    {user.is_read_only
+                                                        ? 'Give full access'
+                                                        : 'Make read-only'}
+                                                </Button>
+                                            </>
+                                        )}
                                     </Form>
 
-                                    <Form
-                                        {...destroy.form(user.id)}
-                                        options={{ preserveScroll: true }}
-                                    >
-                                        <Button
-                                            type="submit"
-                                            variant="ghost"
-                                            size="icon"
-                                            aria-label={`Remove ${user.name}`}
-                                        >
-                                            <Trash2 />
-                                        </Button>
-                                    </Form>
+                                    <ConfirmDelete
+                                        icon
+                                        action={destroy.form(user.id)}
+                                        title={`Remove ${user.name}’s account?`}
+                                        description="They will no longer be able to sign in. This cannot be undone."
+                                        label="Remove"
+                                    />
                                 </div>
                             )}
                         </li>

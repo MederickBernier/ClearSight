@@ -1,26 +1,29 @@
 import { Head, Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import Heading from '@/components/heading';
-import ProjectFilter from '@/components/project-filter';
-import { Badge } from '@/components/ui/badge';
+import ListFilters, { EmptyList } from '@/components/list-filters';
+import Pagination from '@/components/pagination';
+import RecordStatusBadge from '@/components/record-status-badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
 import { create, index, show } from '@/routes/prototypes';
-import type { SelectOption } from '@/types';
+import type { Paginated, SelectOption } from '@/types';
 import type { PrototypeSummary } from './types';
 
 export default function PrototypesIndex({
     prototypes,
     projectFilters,
     projectFilter,
+    statusFilter,
     statuses,
     confidenceLevels,
 }: {
-    prototypes: PrototypeSummary[];
+    prototypes: Paginated<PrototypeSummary>;
     projectFilters: SelectOption[];
     projectFilter: string;
+    statusFilter: string;
     statuses: SelectOption[];
     confidenceLevels: SelectOption[];
 }) {
@@ -31,7 +34,7 @@ export default function PrototypesIndex({
             <Head title="Prototypes" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Prototypes"
                         description="Spikes, what they were meant to prove, and how they landed"
@@ -46,16 +49,20 @@ export default function PrototypesIndex({
                     )}
                 </div>
 
-                <ProjectFilter
+                <ListFilters
                     url={index().url}
-                    options={projectFilters}
-                    value={projectFilter}
+                    statuses={statuses}
+                    status={statusFilter}
+                    projects={projectFilters}
+                    project={projectFilter}
                 />
 
-                {prototypes.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                        No prototypes yet.
-                    </p>
+                {prototypes.data.length === 0 ? (
+                    <EmptyList
+                        filtered={!!statusFilter || !!projectFilter}
+                        url={index().url}
+                        nothingYet="No prototypes yet."
+                    />
                 ) : (
                     <div className="overflow-x-auto rounded-xl border border-sidebar-border/70">
                         <table className="w-full text-sm">
@@ -82,7 +89,7 @@ export default function PrototypesIndex({
                                 </tr>
                             </thead>
                             <tbody>
-                                {prototypes.map((prototype) => (
+                                {prototypes.data.map((prototype) => (
                                     <tr
                                         key={prototype.id}
                                         className="border-t border-sidebar-border/70"
@@ -96,12 +103,13 @@ export default function PrototypesIndex({
                                             </Link>
                                         </td>
                                         <td className="px-4 py-2">
-                                            <Badge variant="secondary">
-                                                {labelFor(
+                                            <RecordStatusBadge
+                                                status={prototype.status}
+                                                label={labelFor(
                                                     statuses,
                                                     prototype.status,
                                                 )}
-                                            </Badge>
+                                            />
                                         </td>
                                         <td className="px-4 py-2">
                                             {labelFor(
@@ -132,6 +140,8 @@ export default function PrototypesIndex({
                         </table>
                     </div>
                 )}
+
+                <Pagination page={prototypes} />
             </div>
         </>
     );

@@ -54,10 +54,10 @@ test('the index lists records ordered by prefix, category and sequence', functio
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('decisions/index')
-            ->has('records', 3)
-            ->where('records.0.document_id', 'ACME-INFRA-009')
-            ->where('records.1.document_id', 'VNG-ARCH-001')
-            ->where('records.2.document_id', 'VNG-ARCH-002'));
+            ->has('records.data', 3)
+            ->where('records.data.0.document_id', 'ACME-INFRA-009')
+            ->where('records.data.1.document_id', 'VNG-ARCH-001')
+            ->where('records.data.2.document_id', 'VNG-ARCH-002'));
 });
 
 test('the create page exposes the status options', function () {

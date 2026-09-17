@@ -1,14 +1,16 @@
 import { Head, Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import Heading from '@/components/heading';
-import ProjectFilter from '@/components/project-filter';
+import ListFilters, { EmptyList } from '@/components/list-filters';
+import Pagination from '@/components/pagination';
+import RecordStatusBadge from '@/components/record-status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDate } from '@/lib/dates';
 import { labelFor } from '@/lib/utils';
 import { create, index, show } from '@/routes/security-notes';
-import type { SelectOption } from '@/types';
+import type { Paginated, SelectOption } from '@/types';
 import type { SecurityNoteSummary } from './types';
 
 const severityVariants: Record<
@@ -25,14 +27,16 @@ export default function SecurityIndex({
     notes,
     projectFilters,
     projectFilter,
+    statusFilter,
     sources,
     severities,
     routes,
     statuses,
 }: {
-    notes: SecurityNoteSummary[];
+    notes: Paginated<SecurityNoteSummary>;
     projectFilters: SelectOption[];
     projectFilter: string;
+    statusFilter: string;
     sources: SelectOption[];
     severities: SelectOption[];
     routes: SelectOption[];
@@ -45,7 +49,7 @@ export default function SecurityIndex({
             <Head title="Security posture" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Security posture"
                         description="Findings, the triage call on each, and where they were routed"
@@ -60,16 +64,20 @@ export default function SecurityIndex({
                     )}
                 </div>
 
-                <ProjectFilter
+                <ListFilters
                     url={index().url}
-                    options={projectFilters}
-                    value={projectFilter}
+                    statuses={statuses}
+                    status={statusFilter}
+                    projects={projectFilters}
+                    project={projectFilter}
                 />
 
-                {notes.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                        No security notes yet.
-                    </p>
+                {notes.data.length === 0 ? (
+                    <EmptyList
+                        filtered={!!statusFilter || !!projectFilter}
+                        url={index().url}
+                        nothingYet="No security notes yet."
+                    />
                 ) : (
                     <div className="overflow-x-auto rounded-xl border border-sidebar-border/70">
                         <table className="w-full text-sm">
@@ -99,7 +107,7 @@ export default function SecurityIndex({
                                 </tr>
                             </thead>
                             <tbody>
-                                {notes.map((note) => (
+                                {notes.data.map((note) => (
                                     <tr
                                         key={note.id}
                                         className="border-t border-sidebar-border/70"
@@ -136,12 +144,13 @@ export default function SecurityIndex({
                                             {labelFor(routes, note.routed_to)}
                                         </td>
                                         <td className="px-4 py-2">
-                                            <Badge variant="secondary">
-                                                {labelFor(
+                                            <RecordStatusBadge
+                                                status={note.status}
+                                                label={labelFor(
                                                     statuses,
                                                     note.status,
                                                 )}
-                                            </Badge>
+                                            />
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                             {formatDate(note.date_flagged)}
@@ -152,6 +161,8 @@ export default function SecurityIndex({
                         </table>
                     </div>
                 )}
+
+                <Pagination page={notes} />
             </div>
         </>
     );

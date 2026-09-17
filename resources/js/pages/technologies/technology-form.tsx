@@ -1,10 +1,14 @@
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import MarkdownField from '@/components/markdown-field';
+import SegmentedControl from '@/components/segmented-control';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import type { SelectOption } from '@/types';
 import type { Technology } from './types';
 
@@ -25,6 +29,7 @@ export default function TechnologyForm({
     statuses,
     submit,
     submitLabel,
+    cancelHref,
 }: {
     technology?: Technology;
     categories: SelectOption[];
@@ -32,6 +37,8 @@ export default function TechnologyForm({
     statuses: SelectOption[];
     submit: (form: ReturnType<typeof useForm<TechnologyFormData>>) => void;
     submitLabel: string;
+    /** Where Cancel goes: the record when editing, the list when creating. */
+    cancelHref: NonNullable<InertiaLinkProps['href']>;
 }) {
     const form = useForm<TechnologyFormData>({
         name: technology?.name ?? '',
@@ -44,6 +51,8 @@ export default function TechnologyForm({
     });
 
     const { data, setData, processing, errors } = form;
+
+    useUnsavedChanges(form.isDirty && !processing);
 
     return (
         <form
@@ -82,13 +91,12 @@ export default function TechnologyForm({
 
                 <div className="grid gap-2">
                     <Label htmlFor="ring">Ring</Label>
-                    <NativeSelect
+                    <SegmentedControl
                         id="ring"
+                        label="Ring"
                         options={rings}
                         value={data.ring}
-                        onChange={(event) =>
-                            setData('ring', event.target.value)
-                        }
+                        onChange={(next) => setData('ring', next)}
                     />
                     <p className="text-sm text-muted-foreground">
                         What you would start something new with today.
@@ -98,13 +106,12 @@ export default function TechnologyForm({
 
                 <div className="grid gap-2">
                     <Label htmlFor="status">Status</Label>
-                    <NativeSelect
+                    <SegmentedControl
                         id="status"
+                        label="Status"
                         options={statuses}
                         value={data.status}
-                        onChange={(event) =>
-                            setData('status', event.target.value)
-                        }
+                        onChange={(next) => setData('status', next)}
                     />
                     <p className="text-sm text-muted-foreground">
                         What is actually running, which can differ from the
@@ -151,9 +158,15 @@ export default function TechnologyForm({
                 placeholder="Why it is here, what it costs, what it would take to leave it"
             />
 
-            <Button type="submit" disabled={processing}>
-                {submitLabel}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button type="submit" disabled={processing}>
+                    {processing && <Spinner />}
+                    {submitLabel}
+                </Button>
+                <Button type="button" variant="ghost" asChild>
+                    <Link href={cancelHref}>Cancel</Link>
+                </Button>
+            </div>
         </form>
     );
 }

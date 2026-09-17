@@ -33,16 +33,21 @@ class DecisionRecordController extends Controller
     public function index(Request $request): Response
     {
         $project = $this->projectFilter($request);
+        $status = DecisionStatus::tryFrom($request->string('status')->toString());
 
         return Inertia::render('decisions/index', [
             'records' => DecisionRecord::query()
                 ->tap(fn ($query) => $this->scopeToProject($query, $project))
+                ->when($status, fn ($query) => $query->where('status', $status))
                 ->orderBy('project_prefix')
                 ->orderBy('category')
                 ->orderBy('sequence')
-                ->get(['id', 'project_prefix', 'category', 'sequence', 'title', 'status', 'updated_at']),
+                ->paginate(25, ['id', 'project_prefix', 'category', 'sequence', 'title', 'status', 'updated_at'])
+                ->withQueryString(),
             'projectFilters' => $this->projectFilterOptions(),
             'projectFilter' => $project ?? '',
+            'statuses' => DecisionStatus::options(),
+            'statusFilter' => $status->value ?? '',
         ]);
     }
 

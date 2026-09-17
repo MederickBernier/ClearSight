@@ -34,7 +34,7 @@ export default function ProjectsIndex({
                     <div className="flex flex-wrap items-center gap-2">
                         <MarkdownExport
                             downloadUrl={everything().url}
-                            label="Everything"
+                            label="Export everything"
                         />
 
                         {(archivedCount > 0 || showingArchived) && (
@@ -101,29 +101,36 @@ export default function ProjectsIndex({
                                             options={{ preserveScroll: true }}
                                             className="ml-auto"
                                         >
-                                            <input
-                                                type="hidden"
-                                                name="archived"
-                                                value={
-                                                    showingArchived ? '0' : '1'
-                                                }
-                                            />
-                                            <Button
-                                                type="submit"
-                                                variant="ghost"
-                                                size="icon"
-                                                aria-label={
-                                                    showingArchived
-                                                        ? `Restore ${project.name}`
-                                                        : `Archive ${project.name}`
-                                                }
-                                            >
-                                                {showingArchived ? (
-                                                    <ArchiveRestore />
-                                                ) : (
-                                                    <Archive />
-                                                )}
-                                            </Button>
+                                            {({ processing }) => (
+                                                <>
+                                                    <input
+                                                        type="hidden"
+                                                        name="archived"
+                                                        value={
+                                                            showingArchived
+                                                                ? '0'
+                                                                : '1'
+                                                        }
+                                                    />
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        aria-label={
+                                                            showingArchived
+                                                                ? `Restore ${project.name}`
+                                                                : `Archive ${project.name}`
+                                                        }
+                                                    >
+                                                        {showingArchived ? (
+                                                            <ArchiveRestore />
+                                                        ) : (
+                                                            <Archive />
+                                                        )}
+                                                    </Button>
+                                                </>
+                                            )}
                                         </Form>
                                     )}
                                 </div>

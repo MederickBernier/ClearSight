@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index, update } from '@/routes/technologies';
+import { index, show, update, edit } from '@/routes/technologies';
 import type { SelectOption } from '@/types';
 import TechnologyForm from './technology-form';
 import type { Technology } from './types';
@@ -27,6 +27,7 @@ export default function EditTechnology({
                 <TechnologyForm
                     technology={technology}
                     {...options}
+                    cancelHref={show(technology.id)}
                     submitLabel="Save changes"
                     submit={(form) => form.submit(update(technology.id))}
                 />
@@ -35,9 +36,13 @@ export default function EditTechnology({
     );
 }
 
-EditTechnology.layout = {
+// The record's own name, so the trail says where you are.
+EditTechnology.layout = (props: {
+    technology: { name: string; id: number };
+}) => ({
     breadcrumbs: [
         { title: 'Technologies', href: index() },
-        { title: 'Edit technology', href: index() },
+        { title: props.technology.name, href: show(props.technology.id) },
+        { title: 'Edit', href: edit(props.technology.id) },
     ],
-};
+});

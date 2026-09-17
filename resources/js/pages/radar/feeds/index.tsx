@@ -1,6 +1,7 @@
 import { Form, Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, RefreshCw, Trash2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
+import ConfirmDelete from '@/components/confirm-delete';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import ScanStatus from '@/components/scan-status';
@@ -10,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
 import { usePermissions } from '@/hooks/use-permissions';
 import { formatDateTime } from '@/lib/dates';
 import { index as radarIndex } from '@/routes/radar';
@@ -209,13 +211,25 @@ export default function FeedsIndex({
                                                     preserveScroll: true,
                                                 }}
                                             >
-                                                <Button
-                                                    type="submit"
-                                                    variant="outline"
-                                                    size="sm"
-                                                >
-                                                    <RefreshCw /> Fetch now
-                                                </Button>
+                                                {({ processing }) => (
+                                                    <>
+                                                        <Button
+                                                            type="submit"
+                                                            disabled={
+                                                                processing
+                                                            }
+                                                            variant="outline"
+                                                            size="sm"
+                                                        >
+                                                            {processing ? (
+                                                                <Spinner />
+                                                            ) : (
+                                                                <RefreshCw />
+                                                            )}
+                                                            Fetch now
+                                                        </Button>
+                                                    </>
+                                                )}
                                             </Form>
 
                                             <Button
@@ -234,21 +248,13 @@ export default function FeedsIndex({
                                                     : 'Edit'}
                                             </Button>
 
-                                            <Form
-                                                {...destroy.form(feed.id)}
-                                                options={{
-                                                    preserveScroll: true,
-                                                }}
-                                            >
-                                                <Button
-                                                    type="submit"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    aria-label={`Remove ${feed.name}`}
-                                                >
-                                                    <Trash2 />
-                                                </Button>
-                                            </Form>
+                                            <ConfirmDelete
+                                                icon
+                                                action={destroy.form(feed.id)}
+                                                title={`Remove the feed ${feed.name}?`}
+                                                description="Items already fetched from it are kept. This cannot be undone."
+                                                label="Remove"
+                                            />
                                         </div>
                                     )}
                                 </div>

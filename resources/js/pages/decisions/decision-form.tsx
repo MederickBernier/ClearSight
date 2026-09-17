@@ -1,4 +1,5 @@
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import { Plus, Trash2 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import MarkdownField from '@/components/markdown-field';
@@ -8,6 +9,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NativeSelect } from '@/components/ui/native-select';
+import { Spinner } from '@/components/ui/spinner';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import type { SelectOption } from '@/types';
 import type { DecisionOption, DecisionRecord } from './types';
 
@@ -72,15 +75,20 @@ export default function DecisionForm({
     statuses,
     submit,
     submitLabel,
+    cancelHref,
 }: {
     record?: DecisionRecord;
     projects: SelectOption[];
     statuses: SelectOption[];
     submit: (form: ReturnType<typeof useForm<DecisionFormData>>) => void;
     submitLabel: string;
+    /** Where Cancel goes: the record when editing, the list when creating. */
+    cancelHref: NonNullable<InertiaLinkProps['href']>;
 }) {
     const form = useForm<DecisionFormData>(initialData(record, statuses));
     const { data, setData, processing, errors } = form;
+
+    useUnsavedChanges(form.isDirty && !processing);
 
     const updateOption = <K extends keyof DecisionOption>(
         index: number,
@@ -374,9 +382,15 @@ export default function DecisionForm({
                 ))}
             </div>
 
-            <Button type="submit" disabled={processing}>
-                {submitLabel}
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button type="submit" disabled={processing}>
+                    {processing && <Spinner />}
+                    {submitLabel}
+                </Button>
+                <Button type="button" variant="ghost" asChild>
+                    <Link href={cancelHref}>Cancel</Link>
+                </Button>
+            </div>
         </form>
     );
 }
