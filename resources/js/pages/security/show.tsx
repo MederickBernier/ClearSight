@@ -57,8 +57,8 @@ export default function ShowSecurityNote({
             <Head title={note.title} />
 
             <div className="flex h-full flex-1 flex-col gap-8 p-4">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex min-w-0 flex-wrap items-center gap-3">
                         <Heading title={note.title} />
                         {!note.is_issue && (
                             <Badge variant="outline">Not an issue</Badge>
@@ -137,9 +137,10 @@ export default function ShowSecurityNote({
                         href={note.external_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex w-fit items-center gap-2 text-sm underline"
+                        className="inline-flex w-fit max-w-full items-center gap-2 text-sm break-all underline"
                     >
-                        <ExternalLink className="size-4" /> {note.external_url}
+                        <ExternalLink className="size-4 shrink-0" />{' '}
+                        {note.external_url}
                     </a>
                 )}
 

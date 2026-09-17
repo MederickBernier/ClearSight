@@ -89,11 +89,11 @@ function Row({
     meta?: string | null;
 }) {
     return (
-        <li className="flex items-center justify-between gap-3 px-4 py-2 text-sm">
-            <Link href={href} className="hover:underline">
+        <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-2 text-sm">
+            <Link href={href} className="min-w-0 break-words hover:underline">
                 {label}
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
                 {badge && <Badge variant="secondary">{badge}</Badge>}
                 {meta && <span className="text-muted-foreground">{meta}</span>}
             </div>
@@ -122,8 +122,8 @@ export default function ShowProject({
             <Head title={project.name} />
 
             <div className="flex h-full flex-1 flex-col gap-8 p-4">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex min-w-0 flex-wrap items-center gap-3">
                         <Badge variant="secondary" className="font-mono">
                             {project.prefix}
                         </Badge>

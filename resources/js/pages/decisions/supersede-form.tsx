@@ -4,8 +4,18 @@ import { useState } from 'react';
 import InputError from '@/components/input-error';
 import MarkdownField from '@/components/markdown-field';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import { supersede } from '@/routes/decisions';
 import type { DecisionRecord } from './types';
 
@@ -27,76 +37,86 @@ export default function SupersedeForm({ record }: { record: DecisionRecord }) {
 
     const { data, setData, processing, errors } = form;
 
-    if (!open) {
-        return (
-            <Button variant="outline" onClick={() => setOpen(true)}>
-                <Replace /> Supersede
-            </Button>
-        );
-    }
-
+    // A dialog rather than a form unfolding in the page header, where it sat
+    // squeezed beside the title and broke the layout on a phone.
     return (
-        <form
-            onSubmit={(event) => {
-                event.preventDefault();
-                form.submit(supersede(record.id));
-            }}
-            className="w-full space-y-4 rounded-xl border border-sidebar-border/70 p-4"
-        >
-            <h2 className="font-medium">Supersede {record.document_id}</h2>
-
-            <div className="grid gap-2">
-                <Label htmlFor="supersede_title">
-                    Title of the replacement
-                </Label>
-                <Input
-                    id="supersede_title"
-                    value={data.title}
-                    onChange={(event) => setData('title', event.target.value)}
-                    required
-                />
-                <InputError message={errors.title} />
-            </div>
-
-            <div className="grid gap-2">
-                <Label htmlFor="supersede_scope">Which part it replaces</Label>
-                <Input
-                    id="supersede_scope"
-                    value={data.scope_note}
-                    onChange={(event) =>
-                        setData('scope_note', event.target.value)
-                    }
-                    placeholder="e.g. deployment model section only"
-                />
-                <p className="text-sm text-muted-foreground">
-                    Leave empty to replace the whole record, which retires it.
-                    Name a part and {record.document_id} stays as it is, a
-                    snapshot of what was true then.
-                </p>
-                <InputError message={errors.scope_note} />
-            </div>
-
-            <MarkdownField
-                id="supersede_impact"
-                label="Why it matters"
-                value={data.impact_summary}
-                onChange={(next) => setData('impact_summary', next)}
-                error={errors.impact_summary}
-                rows={3}
-            />
-
-            <div className="flex items-center gap-2">
-                <Button type="submit" disabled={processing}>
-                    Start the replacement
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline">
+                    <Replace /> Supersede
                 </Button>
-                <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setOpen(false)}
+            </DialogTrigger>
+
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
+                <DialogTitle>Supersede {record.document_id}</DialogTitle>
+                <DialogDescription>
+                    Starts the decision that replaces this one.
+                </DialogDescription>
+
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        form.submit(supersede(record.id));
+                    }}
+                    className="space-y-4"
                 >
-                    Cancel
-                </Button>
-            </div>
-        </form>
+                    <div className="grid gap-2">
+                        <Label htmlFor="supersede_title">
+                            Title of the replacement
+                        </Label>
+                        <Input
+                            id="supersede_title"
+                            value={data.title}
+                            onChange={(event) =>
+                                setData('title', event.target.value)
+                            }
+                            required
+                        />
+                        <InputError message={errors.title} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="supersede_scope">
+                            Which part it replaces
+                        </Label>
+                        <Input
+                            id="supersede_scope"
+                            value={data.scope_note}
+                            onChange={(event) =>
+                                setData('scope_note', event.target.value)
+                            }
+                            placeholder="e.g. deployment model section only"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                            Leave empty to replace the whole record, which
+                            retires it. Name a part and {record.document_id}{' '}
+                            stays as it is, a snapshot of what was true then.
+                        </p>
+                        <InputError message={errors.scope_note} />
+                    </div>
+
+                    <MarkdownField
+                        id="supersede_impact"
+                        label="Why it matters"
+                        value={data.impact_summary}
+                        onChange={(next) => setData('impact_summary', next)}
+                        error={errors.impact_summary}
+                        rows={3}
+                    />
+
+                    <DialogFooter className="gap-2">
+                        <DialogClose asChild>
+                            <Button type="button" variant="ghost">
+                                Cancel
+                            </Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={processing}>
+                            {processing && <Spinner />}
+                            Start the replacement
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }

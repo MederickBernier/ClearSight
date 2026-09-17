@@ -53,7 +53,7 @@ export default function ProjectTimeline({
             <Head title={`${project.name} timeline`} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title={`${project.name} timeline`}
                         description="What happened, newest first"

@@ -256,7 +256,7 @@ export default function DecisionForm({
                 <Input
                     id="next_review_at"
                     type="date"
-                    className="w-56"
+                    className="w-full sm:w-56"
                     value={data.next_review_at}
                     onChange={(event) =>
                         setData('next_review_at', event.target.value)
@@ -298,8 +298,8 @@ export default function DecisionForm({
                         key={index}
                         className="space-y-4 rounded-xl border border-sidebar-border/70 p-4"
                     >
-                        <div className="flex items-start gap-4">
-                            <div className="grid flex-1 gap-2">
+                        <div className="flex flex-wrap items-start gap-4">
+                            <div className="grid min-w-0 flex-1 gap-2">
                                 <Label htmlFor={`option-${index}-name`}>
                                     Name
                                 </Label>

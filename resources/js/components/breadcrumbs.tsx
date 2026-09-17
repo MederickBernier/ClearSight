@@ -18,21 +18,30 @@ export function Breadcrumbs({
     return (
         <>
             {breadcrumbs.length > 0 && (
-                <Breadcrumb>
-                    <BreadcrumbList>
+                <Breadcrumb className="min-w-0">
+                    {/* One line, each crumb clipped: record titles can be long,
+                        and the bar has a fixed height. */}
+                    <BreadcrumbList className="flex-nowrap">
                         {breadcrumbs.map((item, index) => {
                             const isLast = index === breadcrumbs.length - 1;
 
                             return (
                                 <Fragment key={index}>
-                                    <BreadcrumbItem>
+                                    <BreadcrumbItem className="min-w-0">
                                         {isLast ? (
-                                            <BreadcrumbPage>
+                                            <BreadcrumbPage
+                                                className="block max-w-[40vw] truncate sm:max-w-xs"
+                                                title={item.title}
+                                            >
                                                 {item.title}
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
-                                                <Link href={item.href}>
+                                                <Link
+                                                    href={item.href}
+                                                    className="block max-w-[25vw] truncate sm:max-w-xs"
+                                                    title={item.title}
+                                                >
                                                     {item.title}
                                                 </Link>
                                             </BreadcrumbLink>

@@ -120,8 +120,8 @@ export default function ProjectNotes({
                             className="space-y-3 rounded-xl border border-sidebar-border/70 p-4"
                         >
                             <div className="flex items-start justify-between gap-3">
-                                <div>
-                                    <h3 className="font-medium">
+                                <div className="min-w-0">
+                                    <h3 className="font-medium break-words">
                                         {note.title}
                                     </h3>
                                     <p className="text-xs text-muted-foreground">

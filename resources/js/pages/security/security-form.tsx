@@ -256,7 +256,7 @@ export default function SecurityForm({
                         <Input
                             id="deferred_until"
                             type="date"
-                            className="w-56"
+                            className="w-full sm:w-56"
                             value={data.deferred_until}
                             onChange={(event) =>
                                 setData('deferred_until', event.target.value)

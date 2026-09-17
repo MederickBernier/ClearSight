@@ -45,7 +45,7 @@ export default function ShowTechnology({
             <Head title={technology.name} />
 
             <div className="flex h-full flex-1 flex-col gap-8 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="space-y-2">
                         <Heading title={technology.name} />
                         <div className="flex flex-wrap items-center gap-2">
@@ -97,9 +97,9 @@ export default function ShowTechnology({
                         href={technology.homepage_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex w-fit items-center gap-2 text-sm underline"
+                        className="inline-flex w-fit max-w-full items-center gap-2 text-sm break-all underline"
                     >
-                        <ExternalLink className="size-4" />{' '}
+                        <ExternalLink className="size-4 shrink-0" />{' '}
                         {technology.homepage_url}
                     </a>
                 )}

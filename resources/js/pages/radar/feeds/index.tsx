@@ -138,7 +138,7 @@ export default function FeedsIndex({
             <Head title="Feed sources" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Feed sources"
                         description="Pausing a noisy source keeps the items it already produced"

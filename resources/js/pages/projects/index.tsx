@@ -25,7 +25,7 @@ export default function ProjectsIndex({
             <Head title="Projects" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title="Projects"
                         description="Everything filed under one body of work"
@@ -90,7 +90,7 @@ export default function ProjectsIndex({
                                     </Badge>
                                     <Link
                                         href={show(project.id)}
-                                        className="font-medium hover:underline"
+                                        className="min-w-0 font-medium break-words hover:underline"
                                     >
                                         {project.name}
                                     </Link>
@@ -135,7 +135,7 @@ export default function ProjectsIndex({
                                     )}
                                 </div>
 
-                                <dl className="grid grid-cols-5 gap-2 text-center text-sm text-muted-foreground">
+                                <dl className="grid grid-cols-3 gap-2 text-center text-sm text-muted-foreground sm:grid-cols-5">
                                     {[
                                         [
                                             'Decisions',

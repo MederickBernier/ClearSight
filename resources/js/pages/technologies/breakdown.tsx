@@ -130,7 +130,10 @@ export default function TechnologyBreakdown({
                         <table className="w-full text-sm">
                             <thead className="bg-muted/50 text-left">
                                 <tr>
-                                    <th className="px-4 py-2 font-medium">
+                                    {/* The name column stays put while the
+                                        project columns scroll on a narrow
+                                        screen, so a row never loses its label. */}
+                                    <th className="sticky left-0 z-10 bg-card px-4 py-2 font-medium">
                                         Technology
                                     </th>
                                     {projects.map((project) => (
@@ -174,7 +177,7 @@ export default function TechnologyBreakdown({
                                             key={row.id}
                                             className="border-t border-border"
                                         >
-                                            <td className="px-4 py-2">
+                                            <td className="sticky left-0 z-10 min-w-40 bg-card px-4 py-2">
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <Link
                                                         href={row.url}
@@ -217,7 +220,12 @@ export default function TechnologyBreakdown({
                                                             )
                                                         ) : (
                                                             <span className="text-muted-foreground">
-                                                                ·
+                                                                <span aria-hidden="true">
+                                                                    ·
+                                                                </span>
+                                                                <span className="sr-only">
+                                                                    not used
+                                                                </span>
                                                             </span>
                                                         )}
                                                     </td>

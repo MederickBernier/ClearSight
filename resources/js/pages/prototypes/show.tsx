@@ -49,7 +49,7 @@ export default function ShowPrototype({
             <Head title={prototype.title} />
 
             <div className="flex h-full flex-1 flex-col gap-8 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading title={prototype.title} />
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -106,8 +106,8 @@ export default function ShowPrototype({
 
                 {prototype.repo_reference && (
                     <p className="flex items-center gap-2 text-sm">
-                        <GitBranch className="size-4" />
-                        <span className="font-mono">
+                        <GitBranch className="size-4 shrink-0" />
+                        <span className="min-w-0 font-mono break-all">
                             {prototype.repo_reference}
                         </span>
                     </p>
