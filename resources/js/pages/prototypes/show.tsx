@@ -137,6 +137,7 @@ export default function ShowPrototype({
                         <MarkdownSection
                             title="What can be reused"
                             html={html.reusability_note}
+                            level={3}
                         />
                     </section>
                 )}

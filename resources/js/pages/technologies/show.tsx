@@ -135,7 +135,7 @@ export default function ShowTechnology({
                                     {group.label}
                                 </h3>
 
-                                <ul className="divide-y divide-border rounded-xl border border-border">
+                                <ul className="divide-y divide-border rounded-xl border border-sidebar-border/70">
                                     {group.records.map((record) => (
                                         <li
                                             key={record.id}

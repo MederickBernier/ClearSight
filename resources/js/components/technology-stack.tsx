@@ -62,7 +62,7 @@ export default function TechnologyStack({
                     Nothing recorded yet.
                 </p>
             ) : (
-                <ul className="divide-y divide-border rounded-xl border border-border">
+                <ul className="divide-y divide-border rounded-xl border border-sidebar-border/70">
                     {stack.map((entry) => (
                         <li
                             key={entry.id}
@@ -110,7 +110,7 @@ export default function TechnologyStack({
                             onSuccess: () => reset('version', 'role'),
                         });
                     }}
-                    className="grid gap-4 rounded-xl border border-border p-4 md:grid-cols-4 md:items-end"
+                    className="grid gap-4 rounded-xl border border-sidebar-border/70 p-4 md:grid-cols-4 md:items-end"
                 >
                     <div className="grid gap-2 md:col-span-2">
                         <Label htmlFor="technology_id">Technology</Label>

@@ -62,21 +62,21 @@ export default function TechnologyBreakdown({
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-xl border border-border p-4">
+                    <div className="rounded-xl border border-sidebar-border/70 p-4">
                         <p className="text-3xl font-semibold tabular-nums">
                             {summary.technologies}
                         </p>
                         <p className="mt-1 font-medium">In the inventory</p>
                     </div>
 
-                    <div className="rounded-xl border border-border p-4">
+                    <div className="rounded-xl border border-sidebar-border/70 p-4">
                         <p className="text-3xl font-semibold tabular-nums">
                             {summary.usages}
                         </p>
                         <p className="mt-1 font-medium">Recorded uses</p>
                     </div>
 
-                    <div className="rounded-xl border border-border p-4">
+                    <div className="rounded-xl border border-sidebar-border/70 p-4">
                         <p className="text-3xl font-semibold tabular-nums">
                             {summary.heldButRunning.length}
                         </p>
@@ -86,7 +86,7 @@ export default function TechnologyBreakdown({
                         </p>
                     </div>
 
-                    <div className="rounded-xl border border-border p-4">
+                    <div className="rounded-xl border border-sidebar-border/70 p-4">
                         <p className="text-3xl font-semibold tabular-nums">
                             {summary.unused.length}
                         </p>
@@ -98,7 +98,7 @@ export default function TechnologyBreakdown({
                 </div>
 
                 {summary.heldButRunning.length > 0 && (
-                    <section className="space-y-2 rounded-xl border border-border p-4">
+                    <section className="space-y-2 rounded-xl border border-sidebar-border/70 p-4">
                         <h2 className="font-medium">Held, but still running</h2>
                         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                             {summary.heldButRunning.map((row) => (
@@ -126,7 +126,7 @@ export default function TechnologyBreakdown({
                         it is used.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto rounded-xl border border-border">
+                    <div className="overflow-x-auto rounded-xl border border-sidebar-border/70">
                         <table className="w-full text-sm">
                             <thead className="bg-muted/50 text-left">
                                 <tr>
@@ -163,7 +163,7 @@ export default function TechnologyBreakdown({
 
                             {categories.map((category) => (
                                 <tbody key={category.category}>
-                                    <tr className="border-t border-border">
+                                    <tr className="border-t border-sidebar-border/70">
                                         <th
                                             colSpan={projects.length + 2}
                                             className="bg-muted/30 px-4 py-1.5 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
@@ -175,7 +175,7 @@ export default function TechnologyBreakdown({
                                     {category.technologies.map((row) => (
                                         <tr
                                             key={row.id}
-                                            className="border-t border-border"
+                                            className="border-t border-sidebar-border/70"
                                         >
                                             <td className="sticky left-0 z-10 min-w-40 bg-card px-4 py-2">
                                                 <div className="flex flex-wrap items-center gap-2">

@@ -20,13 +20,22 @@ export function Markdown({ html }: { html: string | null }) {
 export function MarkdownSection({
     title,
     html,
+    level = 2,
 }: {
     title: string;
     html: string | null;
+    /** 3 when the section sits under another heading. */
+    level?: 2 | 3;
 }) {
+    const Title = level === 3 ? 'h3' : 'h2';
+
     return (
         <section className="space-y-2">
-            <h2 className="text-lg font-medium">{title}</h2>
+            <Title
+                className={level === 3 ? 'font-medium' : 'text-lg font-medium'}
+            >
+                {title}
+            </Title>
             <Markdown html={html} />
         </section>
     );

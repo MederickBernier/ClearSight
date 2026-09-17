@@ -108,7 +108,7 @@ export default function TechnologiesIndex({
                         Nothing in the inventory yet.
                     </p>
                 ) : (
-                    <div className="overflow-x-auto rounded-xl border border-border">
+                    <div className="overflow-x-auto rounded-xl border border-sidebar-border/70">
                         <table className="w-full text-sm">
                             <thead className="bg-muted/50 text-left">
                                 <tr>
@@ -133,7 +133,7 @@ export default function TechnologiesIndex({
                                 {technologies.map((technology) => (
                                     <tr
                                         key={technology.id}
-                                        className="border-t border-border"
+                                        className="border-t border-sidebar-border/70"
                                     >
                                         <td className="px-4 py-2">
                                             <Link

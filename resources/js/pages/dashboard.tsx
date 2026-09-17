@@ -119,7 +119,7 @@ export default function Dashboard({
                 </header>
 
                 {attention.length === 0 ? (
-                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3 rounded-xl border border-dashed border-sidebar-border/70 p-6 text-sm text-muted-foreground">
                         <Check className="size-5" />
                         No overdue reviews, no open severe findings, and every
                         feed is answering.
@@ -129,7 +129,7 @@ export default function Dashboard({
                         {attention.map((item) => (
                             <li
                                 key={`${item.kind}-${item.url}-${item.why}`}
-                                className={`rounded-lg border border-l-4 border-border bg-card px-4 py-3 ${kindTone[item.kind] ?? 'border-l-border'}`}
+                                className={`rounded-lg border border-l-4 border-sidebar-border/70 bg-card px-4 py-3 ${kindTone[item.kind] ?? 'border-l-border'}`}
                             >
                                 <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                                     <Link
@@ -156,7 +156,7 @@ export default function Dashboard({
                             <Link
                                 key={count.key}
                                 href={count.url}
-                                className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-ring"
+                                className="rounded-xl border border-sidebar-border/70 bg-card p-4 transition-colors hover:border-ring"
                             >
                                 <p className="text-3xl font-semibold tabular-nums">
                                     {count.value}
@@ -183,7 +183,7 @@ export default function Dashboard({
                                 {projects.map((project) => (
                                     <li
                                         key={project.id}
-                                        className="rounded-lg border border-border bg-card px-4 py-3"
+                                        className="rounded-lg border border-sidebar-border/70 bg-card px-4 py-3"
                                     >
                                         <Link
                                             href={project.url}
@@ -226,7 +226,7 @@ export default function Dashboard({
                                 Nothing recorded yet.
                             </p>
                         ) : (
-                            <ul className="divide-y divide-border rounded-xl border border-border bg-card">
+                            <ul className="divide-y divide-border rounded-xl border border-sidebar-border/70 bg-card">
                                 {activity.map((event) => (
                                     <li
                                         key={`${event.kind}-${event.url}-${event.at}`}
