@@ -17,6 +17,12 @@
 
 	encode zstd gzip
 
+	# Reject oversized bodies before they reach php-fpm (PHP Oct 2026
+	# advisory). Matches post_max_size in deploy/php.ini.
+	request_body {
+		max_size 16MB
+	}
+
 	header {
 		# HTTPS is the only way in, so tell browsers to remember that.
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"

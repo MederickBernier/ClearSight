@@ -22,7 +22,10 @@ RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
 # --- Frontend assets -------------------------------------------------------
 # Built on a PHP image rather than a plain Node one: the Wayfinder Vite plugin
 # shells out to `php artisan wayfinder:generate` during the build.
-FROM php:8.5-cli-alpine AS assets
+# PHP base images are pinned to an exact patch release and digest so a rebuild
+# never silently drifts. Bump both stages together on each PHP security release
+# (8.5.12: CVE-2026-109618 / CVE-2026-109619).
+FROM php:8.5.12-cli-alpine3.24@sha256:6242840493d266f74e8ae6a88bfb826325a56a75f374d4b69ea1f9ec960ca1cd AS assets
 
 RUN apk add --no-cache nodejs npm
 
@@ -46,9 +49,12 @@ RUN mkdir -p storage/framework/views storage/framework/cache/data \
     && rm .env
 
 # --- Runtime ---------------------------------------------------------------
-FROM php:8.5-fpm-alpine
+FROM php:8.5.12-fpm-alpine3.24@sha256:f09d9172dd28b8696aef729ca2c2081a132c1f8d581218c99497d552c82a92df
 
-RUN apk add --no-cache postgresql-client libpq icu-libs libzip \
+# The base digest is fixed, so pull in Alpine security patches (openssl, libpq,
+# icu, ...) published since it was built.
+RUN apk upgrade --no-cache \
+    && apk add --no-cache postgresql-client libpq icu-libs libzip \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev icu-dev libzip-dev linux-headers \
     # opcache is not listed: the PHP 8.5 image already ships it built in, and
     # asking docker-php-ext-install for it builds no module and then fails.
